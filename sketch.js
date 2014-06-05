@@ -19,6 +19,11 @@ var p5 = new p5Sound(this);
 var soundFile = new SoundFile('Chris_Zabriskie_-_06_-_Divider.mp3');
 var increment = 0; // map(currentTime, 0, duration, 0, 360)
 
+var fft;
+// 
+var numBands = 2048;
+// array of all the frequency values
+var freqValues = [];
 
 function setup () {
   createCanvas(windowWidth, windowHeight);
@@ -32,23 +37,28 @@ function setup () {
 
   // create a bunch of star objects and add them to the array called stars
   // length of stars array will be linked to buffer size
-  for (i =0; i<=512; i++) {
+  for (i =0; i<=numBands/2; i++) {
     stars.push(new Star());
   }
 
+  // sound
   soundFile.play();
+  fft = new FFT(.1, numBands);
 }
 
 function draw() { 
-  background(0, 0, 0, 2);
+  background(0, 0, 0, 100);
 
   updateIncrement();
 
+  freqValues = fft.processFrequency();
+
   // for every Star object in the array called 'stars'...
   for (i =0; i<stars.length; i++) {
-
+    stars[i].color[2] = i % 256
+    stars[i].diameter = map(freqValues[i], 0, 256, 0.2, 8.0);
     // move the star
-   stars[i].move();
+    stars[i].move();
 
     // then draw the star
     stars[i].update();
@@ -58,20 +68,25 @@ function draw() {
 
 // The star object
 function Star() {
-  this.color = [255, 255, 0]; // color is an array in javascript
-  this.d = random(1,4); // diameter of each star ellipse
+  this.color = [255, 255, 0, 50]; // color is an array in javascript
+  this.diameter = random(0,.5); // diameter of each star ellipse
   this.degree = random(-360, 360);
   this.radius = random(-width/1.5, width/1.5);
   this.x = centerX + (this.radius * cos(radians(this.degree)));
   this.y = centerY + (this.radius * sin(radians(this.degree)));
+
+  // an array of the star's previous positions as X, Y, color, diameter
+  this.prev = [];
 }
 
 
 // called by draw loop
 Star.prototype.update = function() {
   fill(this.color);
-  ellipse(this.x, this.y, this.d, this.d);
-  
+  ellipse(this.x, this.y, this.diameter, this.diameter);
+  for (var i = this.prev.length; i> 0; i--) {
+    this.prev[i]
+  }
 }
 
 // called by draw loop
@@ -83,7 +98,6 @@ Star.prototype.move = function() {
 function updateIncrement() {
   var currentTime = soundFile.currentTime();
   var duration = soundFile.duration();
-  console.log(increment);
   var myIncrement = map(currentTime, 0, duration, 0, 360);
   if (isNaN(myIncrement)) {
     console.log('not ready');

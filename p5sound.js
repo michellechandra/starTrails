@@ -708,7 +708,7 @@ FFT.prototype.input = function(source) {
 /**
  * Returns an array of amplitude values (between -140-0 by default) 
  * from the lowest to highest frequencies in the spectrum.
- * Length will be equal to FFT size (default is 2048).
+ * Length will be equal to 1/2 FFT size (default is 2048 / 1024).
  *
  * @method processFrequency
  * @return {Array}       Array of amplitude values for the frequency spectrum
