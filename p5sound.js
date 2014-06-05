@@ -99,7 +99,6 @@ isFileSupported = function(extension) {
 
 // If a SoundFile is played before the buffer.source has loaded, it will load the file and pass this function as the callback.
 var play_now = function(sfile) {
-  console.log('play now: ' + sfile.url);
   if (sfile.buffer) {
     sfile.source = sfile.p5s.audiocontext.createBufferSource();
     sfile.source.buffer = sfile.buffer;
@@ -292,7 +291,7 @@ SoundFile.prototype.load = function(callback){
  * @for SoundFile
  */
 SoundFile.prototype.play = function(rate, amp) {
-  this.looping = false;
+  // this.looping = false;
   if (this.buffer) {
     // make the source
     this.source = this.p5s.audiocontext.createBufferSource();
@@ -357,36 +356,19 @@ SoundFile.prototype.toggleLoop = function() {
   }
 }
 
-
-// SoundFile.prototype.playPause = function() {
-//   var keepLoop = this.looping;
-//   if (this.playing) {
-//     this.stop();
-//     this.playing = false;
-//   } else {
-//     this.play();
-//     this.playing = true;
-//     this.looping = keepLoop;
-//   }
-// }
-
 /**
  * Pause a file that is currently playing.
  * Save the start time & loop status (true/false) so that we can continue playback from the same spot
  */
 SoundFile.prototype.pause = function() {
-  // TO DO
+  var keepLoop = this.looping;
   if (this.isPlaying() && this.buffer && this.source) {
     this.startTime = this.currentTime();
     this.stop();
   }
   else {
-    if (this.looping) {
-      this.loop();
-    }
-    else {
       this.play();
-    }
+      this.looping = keepLoop;
   }
 }
 
@@ -562,23 +544,24 @@ var Amplitude = function(smoothing) {
   this.processor = this.audiocontext.createScriptProcessor(this.bufferSize);
 
 
-  // Set to 512 for now. In future iterations, this should be inherited or parsed from p5sound's default
+  // Set to 2048 for now. In future iterations, this should be inherited or parsed from p5sound's default
   this.bufferSize = 2048;
 
-  //smoothing (defaults to .8)
-  this.smoothing = .99;
+  //smoothing (defaults to .95)
+  this.smoothing = .95;
 
   if (smoothing) {
     this.smoothing = smoothing;
   }
 
-  console.log('smoothing: ' + this.smoothing);
   // this may only be necessary because of a Chrome bug
   this.processor.connect(this.audiocontext.destination);
 
   // the variables to return
   this.volume = 0;
   this.average = 0;
+  this.volMax = .001;
+  this.normalize = true;
 
   this.processor.onaudioprocess = this.volumeAudioProcess.bind(this);
 }
@@ -598,7 +581,6 @@ var Amplitude = function(smoothing) {
 
  // TO DO figure out how to connect to a buffer before it is loaded
 Amplitude.prototype.input = function(snd, smoothing) {
-  var thisAmp = this;
 
   // set smoothing if smoothing is provided
   if (smoothing) {
@@ -607,7 +589,7 @@ Amplitude.prototype.input = function(snd, smoothing) {
 
   // connect to the master out of p5s instance if no snd is provided
   if (snd == null) {
-    console.log('no s!');
+    console.log('Amplitude input source is not ready! Connecting to master output instead');
     this.p5s.output.connect(this.processor);
   }
 
@@ -615,7 +597,7 @@ Amplitude.prototype.input = function(snd, smoothing) {
   // But for now, it just connects to master.
   else if (snd.source == null) {
     console.log('source is not ready to connect. Connecting to master output instead');
-    // Not working: snd.load(thisAmp.input); // TO DO: figure out how to make it work!
+    // Not working: snd.load(this.input); // TO DO: figure out how to make it work!
     this.p5s.output.connect(this.processor);
   }
 
@@ -643,9 +625,15 @@ Amplitude.prototype.volumeAudioProcess = function(event) {
 
   for (var i = 0; i < bufLength; i++) {
     x = inputBuffer[i];
-    total += x;
+    if (this.normalize){
+      total += constrain(x/this.volMax, -1, 1);
+      sum += constrain(x/this.volMax, -1, 1) * constrain(x/this.volMax, -1, 1);
+    }
+    else {
+      total += x;
+      sum += x * x;
+    }
   }
-  sum += x * x;
 
   var average = total/ bufLength;
 
@@ -653,6 +641,10 @@ Amplitude.prototype.volumeAudioProcess = function(event) {
   var rms = Math.sqrt(sum / bufLength);
 
   this.volume = Math.max(rms, this.volume*this.smoothing);
+  this.volMax=max(this.volume, this.volMax);
+
+  // normalized values
+  this.volNorm = constrain(this.volume/this.volMax, 0, 1);
 }
 
 /**
@@ -663,70 +655,117 @@ Amplitude.prototype.volumeAudioProcess = function(event) {
  * @for Amplitude
  */
 Amplitude.prototype.process = function() {
-  // TO DO --> add more to volume
-  return this.volume;
+  if (this.normalize) {
+    return this.volNorm;
+  }
+  else {
+    return this.volume;
+  }
+}
+
+/**
+ * Turns normalize on/off.
+ *
+ * @method toggleNormalize
+ * @for Amplitude
+ */
+Amplitude.prototype.toggleNormalize = function() {
+  this.normalize = !this.normalize;
 }
 
 
 /**
- *  FFT Object extends AnalyserNode
+ *  FFT Object
  */
 
+// create analyser node with optional variables for smoothing, fft size, min/max decibels
+var FFT = function(smoothing, fft_size, minDecibels, maxDecibels) {
+  var SMOOTHING = smoothing || .6;
+  var FFT_SIZE = fft_size || 2048;
+  this.p5s = window.p5sound;
+  this.analyser = this.p5s.audiocontext.createAnalyser();
 
-var FFT = function(w) {
-  var a = w.p5sound.audiocontext.createAnalyser();
+  // default connections to p5sound master
+  this.p5s.output.connect(this.analyser);
+  this.analyser.connect(this.p5s.audiocontext.destination);
 
-  p5sound.output.connect(a);
+  this.analyser.maxDecibels = maxDecibels || 0;
+  this.analyser.minDecibels = minDecibels || -140;
 
-//  a.prototype = Object.create(AudioContext.prototype);
-  a.input = function(sample, bands) {
-    sample.connect(a);
-  }
+  this.analyser.smoothingTimeConstant = SMOOTHING;
+  this.analyser.fftSize = FFT_SIZE;
 
-  a.freqDomain = new Float32Array(a.frequencyBinCount);
+  this.freqDomain = new Uint8Array(this.analyser.frequencyBinCount);
+  this.timeDomain = new Uint8Array(this.analyser.frequencyBinCount);
 
-  a.getFrequencyValue = function(freq, freqRange) {
-    var nyquist = w.p5sound.audiocontext.sampleRate/2;
-    var index = Math.round(freq/nyquist * a.freqDomain.length);
-    return a.freqDomain[index];
-  }
-
-  a.process = function(bands) {
-    a.freqDomain = new Unit8Array(a.frequencyBinCount);
-    a.getByteFrequencyData(a.freqDomain);
-    return a.freqDomain;
-  }
-//  var a = Object.create(w.p5sound.audiocontext.createAnalyser);
-
-  // w.p5sound.audiocontext.createAnalyser.call(this);
-//  AnalyserNode.call(this);
-//  AnalyserNode.apply(this, src, fftsize);
-  // x = w.p5sound.audiocontext.createAnalyser();
-//  x.apply(this);
-  // AnalyserNode.call(this, src, fftsize); // this would be cool but it doesn't work
-  // this.p5 = w.p5sound;
-  // this.analyser = this.p5.audiocontext.createAnalyser();
-  // src.connect(this); // connect the input
-  // this.connect(this.p5.output); //output
-  // a.p5 = w.p5sound;
-  return a;
 }
 
-// extend AnalyserNode
-FFT.prototype = Object.create(AudioContext.prototype);
-//FFT.prototype.constructor = FFT;
-
-
-
-FFT.prototype.process = function() {
-  console.log('processing!');
+// create analyser node with optional variables for smoothing, fft size, min/max decibels
+FFT.prototype.input = function(source) {
+  source.connect(this.analyser);
 }
 
-// returns the value at a given frequency,
-// or the average value between a range of two frequencies if two frequencies are provided.
-FFT.prototype.getFrequencyValue = function(freq, freqRange) {
-  var nyquist = context.sampleRate/2;
-  var index = Math.round(frequency/nyquist * freqDomain.length);
-  return freqDomain[index];
+/**
+ * Returns an array of amplitude values (between -140-0 by default) 
+ * from the lowest to highest frequencies in the spectrum.
+ * Length will be equal to FFT size (default is 2048).
+ *
+ * @method processFrequency
+ * @return {Array}       Array of amplitude values for the frequency spectrum
+ * @for FFT
+ *
+ */
+FFT.prototype.processFrequency = function() {
+  this.analyser.getByteFrequencyData(this.freqDomain);
+  return this.freqDomain;
 }
 
+
+/**
+ * Returns an array of amplitude values (between 0-255) that can be used to 
+ * draw or represent the waveform of a sound. Length will be
+ * 1/2 size of FFT (default is 2048 / 1024).
+ *
+ * @method processWaveform
+ * @return {Array}       Array of amplitude values (0-255) over time. Length will be 1/2 fftBands.
+ * @for FFT
+ *
+ */
+FFT.prototype.processWaveform = function() {
+  this.analyser.getByteTimeDomainData(this.timeDomain);
+  return this.timeDomain;
+}
+
+// change smoothing
+FFT.prototype.setSmoothing = function(s) {
+  this.analyser.smoothingTimeConstant = s;
+}
+
+FFT.prototype.getSmoothing = function() {
+  return this.analyser.smoothingTimeConstant;
+}
+
+// get value of a specific frequency
+FFT.prototype.getFreqValue = function(frequency) {
+  var nyquist = this.p5s.audiocontext.sampleRate/2;
+  var index = Math.round(frequency/nyquist * this.freqDomain.length);
+  return this.freqDomain[index];
+}
+
+// get value of a range of frequencies
+FFT.prototype.getFreqRange = function(lowFreq, highFreq) {
+  var nyquist = this.p5s.audiocontext.sampleRate/2;
+  var lowIndex = Math.round(lowFreq/nyquist * this.freqDomain.length);
+  var highIndex = Math.round(highFreq/nyquist * this.freqDomain.length);
+
+  var total = 0;
+  var numFrequencies = 0;
+  // add up all of the values for the frequencies
+  for (var i = lowIndex; i<=highIndex; i++) {
+    total += this.freqDomain[i];
+    numFrequencies += 1;
+  }
+  // divide by total number of frequencies
+  var toReturn = total/numFrequencies;
+  return toReturn;
+}
