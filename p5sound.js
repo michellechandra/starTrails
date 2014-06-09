@@ -20,7 +20,7 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var audiocontext;
 audiocontext = new AudioContext();
 
-// SHIMS (inspired by tone.js and the AudioContext MonkeyPatch https://github.com/cwilso/AudioContext-MonkeyPatch/ (c) 2013 Chris Wilson, Licensed under the Apache License) //
+// Polyfills & SHIMS (inspired by tone.js and the AudioContext MonkeyPatch https://github.com/cwilso/AudioContext-MonkeyPatch/ (c) 2013 Chris Wilson, Licensed under the Apache License) //
 
 if (typeof audiocontext.createGain !== "function"){
   audioContext.createGain = audioContext.createGainNode;

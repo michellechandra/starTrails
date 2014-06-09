@@ -57,7 +57,7 @@ function setup () {
   // sound
   soundFile.play();
   fft = new FFT(.01, numBands);
-  amplitude = new Amplitude(.985);
+  amplitude = new Amplitude(.985); // amplitude takes 'smoothing'
   amplitude.input();
   amplitude.toggleNormalize();
 }
