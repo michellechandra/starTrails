@@ -1,7 +1,6 @@
 // TO DO: pixels, check the for loop (nature of code), pop
 
 // p5sound variables
-var p5s = new p5Sound(this);
 var soundFile;
 
 var centerX;
@@ -20,8 +19,6 @@ var thisCanvas;
 // variables tied to music
 // =======================
 
-// p5sound context
-var p5s = new p5Sound(this);
 var soundFile = new SoundFile('Chris_Zabriskie_-_06_-_Divider.mp3');
 var duration = 0;
 var currentTime = 0;
@@ -32,7 +29,6 @@ var fft;
 var amplitude;
 var volume;
 
-// 
 var numBands = 1024;
 // array of all the frequency values
 var freqValues = [];
@@ -57,15 +53,12 @@ function setup () {
   // sound
   soundFile.play();
   fft = new FFT(.01, numBands);
-  amplitude = new Amplitude(.985);
-  amplitude.input();
-  amplitude.toggleNormalize();
+  amplitude = new Amplitude(.985); // amplitude takes 'smoothing'
 }
 
 function draw() { 
 
   volume = amplitude.process();
-  console.log(volume);
 
   var bRed = map(currentTime, 0, duration, 20, 0);
   var bBlue = map(currentTime, 0, duration, 20, 40);
@@ -94,14 +87,6 @@ function draw() {
     stars[i].update();
   }
 
-  // tell all the items in this star's trail to draw themselves
-  // for (var i = trails.length-1; i>= 0; i--) {
-  //   if (trails[i].c[3] < 5) {
-  //     trails.splice(i,1); // remove the item from the array if its alpha is less than zero
-  //   } else {
-  //     trails[i].update();
-  //   }
-  // }
 
 }
 
@@ -119,10 +104,6 @@ function Star() {
 // called by draw loop
 Star.prototype.update = function() {
 
-    if (frameCount % 2 == 0 ){
-      // before updating x & y, add coordinates to the star's trail
-      trails.push( new starTrail(this.x, this.y, this.color, this.diameter) );
-    }
     // update the x and y position based on the increment
     this.x = centerX + (this.radius * cos(radians(this.degree + increment)));
     this.y = centerY + (this.radius * sin(radians(this.degree + increment)));
@@ -133,25 +114,6 @@ Star.prototype.update = function() {
     // point(this.x, this.y);
 }
 
-
-/**
- * We're not using these at the moment...
- */
-function starTrail(_x, _y, _c, _d) {
-  this.x = _x;
-  this.y = _y;
-  this.c = _c;
-  this.diameter = _d;
-}
-
-starTrail.prototype.update = function() {
-  if (frameCount % 300 == 0) {
-    this.c[3] = this.c[3] - .1; // decrease variable could be based on the music?
-  }
-  stroke(this.c);
-  //    ellipse(this.x, this.y, this.diameter, this.diameter);
-  point(this.x, this.y, 255);
-}
 
 // update rotation based on song time / duration
 function updateIncrement() {
