@@ -130,11 +130,11 @@ function draw() {
 
   var bRed = map(currentTime, 0, duration, 20, 0);
   var bBlue = map(currentTime, 0, duration, 20, 40);
-  if (frameCount % 100 == 0 ){
+  if (frameCount % 40 == 0 ){
     if (duration > 0) {
       background(bRed,0,bBlue,10);
     } else {
-      background(0,0,0,200);
+      background(0,0,0,250);
     }
   } 
 
@@ -146,13 +146,13 @@ function draw() {
 
     // only draw colors if lots of energy in that frequency
     if (freqValues[i] == 0) {
-        stars[i].diameter = .00;
+        stars[i].diameter = 1;
     }
     else if (volume > .1) {
-        stars[i].diameter = map(freqValues[i], 60, 256, 0, 35.0)*volume;
+        stars[i].diameter = map(freqValues[i], 120, 256, .5, 15)*volume;
     }
     else {
-      stars[i].diameter = map(freqValues[i], 60, 256, .1, 15.0)*volume;
+      stars[i].diameter = map(freqValues[i], 120, 256, .5, 10)*volume;
     }
       // stars[i].color[3] = freqValues[i]/5; // map brightness to frequency value
 
@@ -302,7 +302,7 @@ function rectGradient(x, y, w, h, c1, c2, axis, _alph) {
       fill(c);
       stroke(c);
 
-      // ellipse(this.x, this.y, this.diameter, this.diameter);
+       ellipse(this.x, this.y, this.diameter, this.diameter);
 
       //line(x, i, x+w, i);
 

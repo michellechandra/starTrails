@@ -1,7 +1,6 @@
 // TO DO: pixels, check the for loop (nature of code), pop
 
 // p5sound variables
-var p5s = new p5Sound(this);
 var soundFile;
 
 var centerX; // position star trails radially in the center
@@ -21,7 +20,9 @@ var thisCanvas;
 // =======================
 
 // p5sound context
-var p5s = new p5Sound(this);
+//var p5s = new p5Sound(this);
+
+// p5sound 
 var soundFile = new SoundFile('Chris_Zabriskie_-_06_-_Divider.mp3');
 var duration = 0;
 var currentTime = 0; // variable to store current time of mp3
@@ -33,7 +34,7 @@ var amplitude;
 var volume;
 
 // 
-var numBands = 2048; // number of frequency waves 1024
+var numBands = 1024; // number of frequency waves 1024
 // array of all the frequency values
 var freqValues = [];
 
@@ -114,7 +115,7 @@ function setup () {
   soundFile.play();
   fft = new FFT(.01, numBands);
   amplitude = new Amplitude(.985);
-  amplitude.input();
+ // amplitude.input();
   amplitude.toggleNormalize();
 }
 
@@ -194,9 +195,9 @@ function draw() {
   for (i =0; i<stars.length; i++) {
     //stars[i].color[2] = i % 256
     if (volume > .1) {
-      stars[i].diameter = map(freqValues[i], 120, 256, 0, 30.0)*volume;
+      stars[i].diameter = map(freqValues[i], 120, 256, .5, 5)*volume;
     } else {
-      stars[i].diameter = map(freqValues[i], 120, 256, 0, 15.0)*volume;
+      stars[i].diameter = map(freqValues[i], 120, 256, .5, 3)*volume;
     }
     // stars[i].color[3] = freqValues[i]/5; // map brightness to frequency value
 
