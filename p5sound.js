@@ -560,9 +560,7 @@ var createP5Sound = (function(){
 
   // private function for onended behavior
   SoundFile.prototype._onEnded = function(s) {
-    console.log(s);
     s.onended = function(s){
-      console.log(s);
       s.stop();
     };
   };
@@ -932,7 +930,7 @@ SoundFile.prototype.getRate = function() {
       this.startTime = 0;
     }
     else {
-      console.log('cue time out of range!');
+      window.console.log('cue time out of range!');
     }
   };
 
