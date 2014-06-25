@@ -11,7 +11,7 @@ var xspacing = 2;   // How far apart should each horizontal position be spaced
 var w;              // Width of entire wave
 var maxwaves = 1;   // total # of waves to add together
 
-var theta = 0.0;
+var theta = 0.4;
 var amplitudewaves = [];   // Height of wave
 var dx = [];          // Value for incrementing X, to be calculated as a function of period and xspacing
 var yvalues;                           // Using an array to store height values for the wave (not entirely necessary)
@@ -44,7 +44,7 @@ function setup() {
   createCanvas(840,360);
 
   colorMode(RGB, 255, 255, 255, 100);
-    background(0);
+    background(0, 0, 0, 4);
   w = width + 200;
 
   // sound
@@ -67,7 +67,7 @@ function setup() {
 }
 
 function draw() {
-  background(51);
+  background(51, 51, 51, 10);
   volume = amplitude.process();
   freqValues = fft.processFrequency();
 
@@ -115,6 +115,7 @@ function renderWave() {
       var diameter = map(freqValues[x],120, 512, 10, 30)*volume;
     }
  
+ console.log(diameter);
 
   fill(30,180, 255,100);
   ellipse(x*xspacing-250,height/6+yvalues[x],diameter,diameter);
