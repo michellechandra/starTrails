@@ -919,10 +919,10 @@ SoundFile.prototype.getRate = function() {
    * Move the playhead of the song to a position, in seconds 
    *
    * @for p5Sound:SoundFile
-   * @method cue
+   * @method jump
    * @param {Number} [cueTime]    cueTime of the soundFile in seconds.
    */
-  SoundFile.prototype.cue = function(cueTime) {
+  SoundFile.prototype.jump = function(cueTime) {
     if ( (cueTime > 0) && (cueTime <= this.buffer.duration) ) {
       this.startTime = cueTime;
     }
