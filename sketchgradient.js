@@ -1,7 +1,5 @@
 // TO DO: pixels, check the for loop (nature of code), pop
 
-// p5sound variables
-var p5s = new p5Sound(this);
 var soundFile;
 
 var centerX;
@@ -21,8 +19,6 @@ var thisCanvas;
 // =======================
 
 // p5sound context
-var p5s = new p5Sound(this);
-var soundFile = new SoundFile('Chris_Zabriskie_-_06_-_Divider.mp3');
 var duration = 0;
 var currentTime = 0;
 var increment = 0; // map(currentTime, 0, duration, 0, 360)
@@ -104,6 +100,9 @@ var lerpAmount = .00001;
 
 
 function setup () {
+  // p5 sound
+  soundFile = new SoundFile('Chris_Zabriskie_-_06_-_Divider.mp3');
+
   //background(0);
   thisCanvas = createCanvas(windowWidth, windowHeight);
   background(0);
@@ -124,7 +123,6 @@ function setup () {
   soundFile.play();
   fft = new FFT(.01, numBands);
   amplitude = new Amplitude(.985);
-  amplitude.input();
   amplitude.toggleNormalize();
 }
 //}
@@ -155,10 +153,9 @@ function draw() {
   setGradient(0, 2*height/6, width, height/6, color1, color2, Y_AXIS);
   setGradient(0, 3*height/6, width, height/6, color2, color3, Y_AXIS);
   setGradient(0, 4*height/6, width, height/6, color3, color4, Y_AXIS);
+  setGradient(0, 5*height/6, width, height/6, color4, color4, Y_AXIS);
 
-
-  volume = amplitude.process();
-  console.log(volume);
+  volume = amplitude.getLevel();
 
   /*var bRed = map(currentTime, 0, duration, 20, 0);
   var bBlue = map(currentTime, 0, duration, 20, 40);
@@ -172,7 +169,7 @@ function draw() {
 
   updateIncrement();
 
-  freqValues = fft.processFrequency();
+  freqValues = fft.processFreq();
   // for every Star object in the array called 'stars'...
   for (i =0; i<stars.length; i++) {
     //stars[i].color[2] = i % 256
