@@ -196,9 +196,9 @@ function draw() {
   for (i =0; i<stars.length; i++) {
     //stars[i].color[2] = i % 256
     if (volume > .1) {
-      stars[i].diameter = map(freqValues[i], 120, 256, .5, 5)*volume;
+      stars[i].diameter = map(freqValues[i], 120, 256, 1, 5)*volume;
     } else {
-      stars[i].diameter = map(freqValues[i], 120, 256, .5, 3)*volume;
+      stars[i].diameter = map(freqValues[i], 120, 256, 1, 3)*volume;
     }
     // stars[i].color[3] = freqValues[i]/5; // map brightness to frequency value
 
@@ -255,8 +255,17 @@ function Star() {
   this.diameter = random(0,.5); // diameter of each star ellipse
   this.degree = random(-360, 360);
   this.radius = random(-width/1.2, width/1.2);
-  this.x = centerX + (this.radius * cos(radians(this.degree)));
-  this.y = centerY + (this.radius * sin(radians(this.degree)));
+   // NOTE this line of code for this.x will make an ellipse: 
+    
+
+    if (this.degree >= TWO_PI && this.degree <= PI) {
+      this.x = centerX + (((this.radius)*1.25) * cos(radians(this.degree)));
+      this.y = centerY + (((this.radius)*3) * sin(radians(this.degree + increment)));
+  //this.x = centerX + (this.radius * cos(radians(this.degree));
+    } else {
+      this.x = centerX + (((this.radius)*1.25) * cos(radians(this.degree)));
+      this.y = centerY + (this.radius * sin(radians(this.degree)));
+}
 }
 
 
@@ -268,8 +277,19 @@ Star.prototype.update = function() {
       trails.push( new starTrail(this.x, this.y, this.color, this.diameter) );
     }
     // update the x and y position based on the increment
-    this.x = centerX + (this.radius * cos(radians(this.degree + increment)));
+    // NOTE this line of code for this.x will make an ellipse: 
+   // this.x = centerX + (((this.radius)*2) * cos(radians(this.degree + increment)));
+    //this.x = centerX + (this.radius * cos(radians(this.degree + increment));
+
+      if (this.degree >= TWO_PI && this.degree <= PI) {
+            this.x = centerX + (((this.radius)*1.25) * cos(radians(this.degree + increment)));
+
+    this.y = centerY + (((this.radius)*3) * sin(radians(this.degree + increment)));
+  } else {
+        this.x = centerX + (((this.radius)*1.25) * cos(radians(this.degree + increment)));
+
     this.y = centerY + (this.radius * sin(radians(this.degree + increment)));
+  }
 
     // draw an ellipse at the new x and y position
    // fill(this.c);
