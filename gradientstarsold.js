@@ -102,8 +102,8 @@ function setup () {
   ellipseMode(CENTER);
   noStroke();
 
-  centerX = width/2; // center of the circle
-  centerY = height/2; // center of the circle
+  centerX = width/4; // center of the circle
+  centerY = height/4; // center of the circle
 
 
   // create a bunch of star objects and add them to the array called stars
