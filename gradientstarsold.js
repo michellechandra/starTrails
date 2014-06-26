@@ -23,7 +23,6 @@ var thisCanvas;
 //var p5s = new p5Sound(this);
 
 // p5sound 
-var soundFile = new SoundFile('Chris_Zabriskie_-_06_-_Divider.mp3');
 var duration = 0;
 var currentTime = 0; // variable to store current time of mp3
 var increment = 0; // map(currentTime, 0, duration, 0, 360)
@@ -96,6 +95,8 @@ var lerpAmount = .01;
 
 
 function setup () {
+  soundFile = new SoundFile('Chris_Zabriskie_-_06_-_Divider.mp3');
+
   background(0);
   thisCanvas = createCanvas(windowWidth, windowHeight);
   ellipseMode(CENTER);
@@ -175,7 +176,7 @@ function draw() {
   setGradient(0, 4*height/6, width, height/6, color3, color3, Y_AXIS); 
 
 
-  volume = amplitude.process();
+  volume = amplitude.getLevel();
   console.log(volume);
 
   var bRed = map(currentTime, 0, duration, 20, 0);
@@ -190,7 +191,7 @@ function draw() {
 
   updateIncrement();
 
-  freqValues = fft.processFrequency();
+  freqValues = fft.processFreq();
   // for every Star object in the array called 'stars'...
   for (i =0; i<stars.length; i++) {
     //stars[i].color[2] = i % 256
