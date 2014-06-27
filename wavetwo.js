@@ -9,7 +9,7 @@
 
 var xspacing = 2;   // How far apart should each horizontal position be spaced
 var w;              // Width of entire wave
-var maxwaves = 1;   // total # of waves to add together
+var maxwaves = 20;   // total # of waves to add together
 
 var theta = 0.4;
 var amplitudewaves = [];   // Height of wave
@@ -24,7 +24,7 @@ var soundFile;
 // =======================
 
 // p5sound 
-var soundFile = new SoundFile('Chris_Zabriskie_-_06_-_Divider.mp3');
+//var soundFile = new SoundFile('Chris_Zabriskie_-_06_-_Divider.mp3');
 var duration = 0;
 var currentTime = 0; // variable to store current time of mp3
 var increment = 0; // map(currentTime, 0, duration, 0, 360)
@@ -39,9 +39,13 @@ var numBands = 1024; // number of frequency waves
 var freqValues = [];
 
 
-function setup() {
+var centerX; // position star trails radially in the center
+var centerY;
 
-  createCanvas(840,360);
+
+function setup() {
+  soundFile = new SoundFile('Chris_Zabriskie_-_06_-_Divider.mp3');
+  createCanvas(900,360);
 
   colorMode(RGB, 255, 255, 255, 100);
     background(0, 0, 0, 4);
@@ -51,7 +55,8 @@ function setup() {
   soundFile.play();
   fft = new FFT(.01, numBands);
   amplitude = new Amplitude(.985);
-  // amplitude.toggleNormalize();
+ // amplitude.input();
+  amplitude.toggleNormalize();
 
   for (var i = 0; i < maxwaves; i++) {
     amplitudewaves[i] = random(10, 30);
@@ -67,10 +72,10 @@ function setup() {
 }
 
 function draw() {
-  background(51, 51, 51, 10);
-  volume = amplitude.process();
-  freqValues = fft.processFrequency();
-
+  background(51, 51, 51, 25);
+  volume = amplitude.getLevel();
+  //console.log(volume);
+  freqValues = fft.processFreq();
   calcWave();
   renderWave();
 
@@ -78,7 +83,7 @@ function draw() {
 
 function calcWave() {
   // Increment theta (try different values for 'angular velocity' here
-  theta += .01;
+  theta += .1;
 
 
   // Set all height values to zero
@@ -109,23 +114,23 @@ function renderWave() {
   var diameter = 3;
  }
   else if (volume > .1) {
-   var diameter = map(freqValues[x], 120, 512, 30, 90)*volume;
+   var diameter = map(freqValues[x], 120, 256, 30, 90)*volume;
 }
     else {
-      var diameter = map(freqValues[x],120, 512, 10, 30)*volume;
+      var diameter = map(freqValues[x],120, 256, 10, 30)*volume;
     }
  
  console.log(diameter);
 
   fill(30,180, 255,100);
-  ellipse(x*xspacing-250,height/6+yvalues[x],diameter,diameter);
+  ellipse(x*xspacing-250,height/2.2+yvalues[x],diameter,diameter);
   fill(0,180, 255,200);
-  ellipse(x*xspacing-100,((height/6)+20)+yvalues[x],diameter,diameter);
+  ellipse(x*xspacing-100,((height/2.1)+20)+yvalues[x],diameter,diameter);
 
   fill(30,180, 255,100);
   ellipse(x*xspacing,height/3+yvalues[x],diameter,diameter);
   fill(0,180, 255,200);
-  ellipse(x*xspacing-50,height/5+yvalues[x],diameter,diameter);
+  ellipse(x*xspacing-50,height/2+yvalues[x],diameter,diameter);
 
     
    fill(230,180, 255,100);
@@ -134,7 +139,7 @@ function renderWave() {
    ellipse(x*xspacing,height/3.2+yvalues[x],diameter,diameter);
    fill(230,180, 255,100);
 
-   fill(230,180, 255,100);
+   /*fill(230,180, 255,100);
    ellipse(x*xspacing-100,height/2.1+yvalues[x],diameter,diameter);
    fill(0,180, 255,200);
    ellipse(x*xspacing-100,height/2.2+yvalues[x],diameter,diameter);
@@ -144,7 +149,7 @@ function renderWave() {
    ellipse(x*xspacing,(height/4)*3+yvalues[x],diameter,diameter);
    ellipse(x*xspacing-250,(height/6)*5+yvalues[x],diameter,diameter);
    ellipse(x*xspacing-100,(height/6)*4+yvalues[x],diameter,diameter);
-   ellipse(x*xspacing-50,(height/5)*3+yvalues[x],diameter,diameter);
+   ellipse(x*xspacing-50,(height/5)*3+yvalues[x],diameter,diameter); */
   
 
 }
