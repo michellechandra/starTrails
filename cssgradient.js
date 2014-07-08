@@ -6,20 +6,12 @@ var centerX; // position star trails radially in the center
 var centerY;
 
 var stars = []; // array to hold array of star objects
-//var trails = [];
 
 var xLoc = 0; // starting x and y location of point moving around circumference of circle
 var yLoc = 0; 
 var degree = 0; // how far around the circle
 
 var thisCanvas;
-
-// =======================
-// variables tied to music
-// =======================
-
-// p5sound context
-//var p5s = new p5Sound(this);
 
 // p5sound 
 var duration = 0;
@@ -84,15 +76,6 @@ var sunriseEnd = [
   'sunriseEnd'
 ];
 
-// put all the above times of day into an array
-var times = [sunsetA, twilight, nightTime, sunriseEnd];
-//sunsetA, twilight, nightTime, 
-//times[timePos] = sunsetA;
-var timePos = 0;
-
-var lerpAmount = .01;
-
-
 function setup () {
   soundFile = new SoundFile('Chris_Zabriskie_-_06_-_Divider.mp3');
 
@@ -121,60 +104,6 @@ function setup () {
 
 function draw() { 
 
-  lerpAmount = ( (frameCount) % 800 ) / 800; //lerpAmount goes from 0.0 to 1.0
-
-  // change to the next times' color palette when lerpAmount reaches 0
-  if (lerpAmount == 0) {
-    timePos++;
-    timePos = timePos % (times.length-1);
-   // print('transitioning from ' + times[timePos][5] +' to ' +times[timePos+1][5]); // print out what time it is
-  }
-
-  // generate 5 colors by lerping between the colors [R, G, B] in the time array at timePos and timePos+1
-  // Example: times[3] = nightTime, times[3][0] = first color, times[3][0][0] = Red value.
-  var color0 = 
-
-  [lerp(times[timePos][0][0],times[timePos+1][0][0],lerpAmount), // each line linked to R-G-B value
-   lerp(times[timePos][0][1],times[timePos+1][0][1],lerpAmount), // color0 = sunsetA (first one in times array)
-   lerp(times[timePos][0][2],times[timePos+1][0][2],lerpAmount)];
-  // lerp(times[timePos][0][3],times[timePos+1][0][3],lerpAmount)];
-
-  var color1 = 
-
-  [lerp(times[timePos][1][0],times[timePos+1][1][0],lerpAmount),
-   lerp(times[timePos][1][1],times[timePos+1][1][1],lerpAmount),
-   lerp(times[timePos][1][2],times[timePos+1][1][2],lerpAmount)];
-  // lerp(times[timePos][1][3],times[timePos+1][1][3],lerpAmount)];
-
-  var color2 = 
-
-  [lerp(times[timePos][2][0],times[timePos+1][2][0],lerpAmount),
-  lerp(times[timePos][2][1],times[timePos+1][2][1],lerpAmount),
-  lerp(times[timePos][2][2],times[timePos+1][2][2],lerpAmount)];
-  //lerp(times[timePos][2][3],times[timePos+1][2][3],lerpAmount)];
-
-  var color3 = 
-
-  [lerp(times[timePos][3][0],times[timePos+1][3][0],lerpAmount),
-   lerp(times[timePos][3][1],times[timePos+1][3][1],lerpAmount),
-   lerp(times[timePos][3][2],times[timePos+1][3][2],lerpAmount)];
-  // lerp(times[timePos][3][3],times[timePos+1][3][3],lerpAmount)];
-
-  /*var color4 = 
-
-  [lerp(times[timePos][4][0],times[timePos+1][4][0],lerpAmount),
-  lerp(times[timePos][4][1],times[timePos+1][4][1],lerpAmount),
-  lerp(times[timePos][4][2],times[timePos+1][4][2],lerpAmount)];*/
-
-
-  // divide the background into six rectangles of gradients. (Top and bottom are actually same color, not gradients)
-  setGradient(0, 0, width, height/6, color0, color0, Y_AXIS);
-  setGradient(0, height/6, width, height/6, color0, color1, Y_AXIS);
-  setGradient(0, 2*height/6, width, height/6, color1, color2, Y_AXIS);
-  setGradient(0, 3*height/6, width, height/6, color2, color3, Y_AXIS);
-  setGradient(0, 4*height/6, width, height/6, color3, color3, Y_AXIS); 
-
-
   volume = amplitude.getLevel();
   console.log(volume);
 
@@ -195,9 +124,9 @@ function draw() {
   for (i =0; i<stars.length; i++) {
     //stars[i].color[2] = i % 256
     if (volume > .1) {
-      stars[i].diameter = map(freqValues[i], 120, 256, 1, 5)*volume;
+      stars[i].diameter = map(freqValues[i], 120, 256, 1, 15)*volume;
     } else {
-      stars[i].diameter = map(freqValues[i], 120, 256, 1, 3)*volume;
+      stars[i].diameter = map(freqValues[i], 120, 256, 1, 10)*volume;
     }
     // stars[i].color[3] = freqValues[i]/5; // map brightness to frequency value
 
@@ -205,20 +134,8 @@ function draw() {
     stars[i].update();
   }
 
-  // tell all the items in this star's trail to draw themselves
-  // for (var i = trails.length-1; i>= 0; i--) {
-  //   if (trails[i].c[3] < 5) {
-  //     trails.splice(i,1); // remove the item from the array if its alpha is less than zero
-  //   } else {
-  //     trails[i].update();
-  //   }
-  // }
-
-
   function setGradient(x, y, w, h, c1, c2, axis, c) {
 
-//  noFill();
-  //var alph = 200;
   noStroke();
 
   if (axis == Y_AXIS) {  // Top to bottom gradient
@@ -254,9 +171,9 @@ function draw() {
 
 // The star object
 function Star() {
-  //this.color = [255, 255, 255, 255]; // color is an array in javascript
-  this.c;
-  this.diameter = random(1,2); // diameter of each star ellipse
+  this.color = [255, 255, 255, 255]; // color is an array in javascript
+  //this.c;
+  this.diameter = random(0,.5); // diameter of each star ellipse
   this.degree = random(-360, 360);
   this.radius = random(-width/1.2, width/1.2);
    // NOTE this line of code for this.x will make an ellipse: 
@@ -276,10 +193,10 @@ function Star() {
 // called by draw loop
 Star.prototype.update = function() {
 
-    if (frameCount % 2 == 0 ){
+    /*if (frameCount % 2 == 0 ){
       // before updating x & y, add coordinates to the star's trail
       trails.push( new starTrail(this.x, this.y, this.color, this.diameter) );
-    }
+    } */
     // update the x and y position based on the increment
     // NOTE this line of code for this.x will make an ellipse: 
    // this.x = centerX + (((this.radius)*2) * cos(radians(this.degree + increment)));
@@ -296,7 +213,7 @@ Star.prototype.update = function() {
   }
 
     // draw an ellipse at the new x and y position
-   // fill(this.c);
+    stroke(this.c);
     ellipse(this.x, this.y, this.diameter, this.diameter);
     // point(this.x, this.y);
 }
