@@ -286,13 +286,13 @@ Star.prototype.update = function() {
     //this.x = centerX + (this.radius * cos(radians(this.degree + increment));
 
       if (this.degree >= TWO_PI && this.degree <= PI) {
-            this.x = centerX + (((this.radius)*1.25) * cos(radians(this.degree + increment)));
+      this.x = centerX + (((this.radius)*1.25) * cos(radians(this.degree + increment)));
 
-    this.y = centerY + (((this.radius)*3) * sin(radians(this.degree + increment)));
-  } else {
-        this.x = centerX + (((this.radius)*1.25) * cos(radians(this.degree + increment)));
+      this.y = centerY + (((this.radius)*3) * sin(radians(this.degree + increment)));
+       } else {
+       this.x = centerX + (((this.radius)*1.25) * cos(radians(this.degree + increment)));
 
-    this.y = centerY + (this.radius * sin(radians(this.degree + increment)));
+        this.y = centerY + (this.radius * sin(radians(this.degree + increment)));
   }
 
     // draw an ellipse at the new x and y position
