@@ -58,7 +58,7 @@ function draw() {
 
   // for every Star object in the array called 'stars'...
   for (i =0; i<stars.length; i++) {
-   // stars[i].color[3] = i % 25;
+    stars[i].color[3] = i % 25;
     if (volume > .1) {
       stars[i].diameter = map(freqValues[i], 120, 256, 0, 35.0)*volume;
     } else {
@@ -78,7 +78,7 @@ function draw() {
     } else if (frameCount % 10 == 0) {
       background(0,0,0,2);
     }
-  }  
+  }   
 
 /* if (frameCount % 10 == 0 ){
       background(0,0,0,2);
