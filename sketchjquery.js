@@ -60,7 +60,7 @@ function draw() {
   for (i =0; i<stars.length; i++) {
     stars[i].color[3] = i % 100;
     if (volume > .1) {
-      stars[i].diameter = map(freqValues[i], 120, 256, 15, 35.0)*volume;
+      stars[i].diameter = map(freqValues[i], 120, 256, 0, 25.0)*volume;
     } else {
       stars[i].diameter = map(freqValues[i], 120, 256, 0, 15.0)*volume;
     }
@@ -69,8 +69,9 @@ function draw() {
     stars[i].update();
   }
 
+ /*  Old Background code no longer using 
 
- /* var bRed = map(currentTime, 0, duration, 20, 0);
+  var bRed = map(currentTime, 0, duration, 20, 0);
   var bBlue = map(currentTime, 0, duration, 20, 40);
   if (frameCount % 40 == 0 ){
     if (duration > 0) {
@@ -83,31 +84,12 @@ function draw() {
 /* if (frameCount % 20 == 0 ){
       background(0,0,0,1);
     } */
-
-
-// when document is loaded and ready, execute my jQuery manipulations!
-
-  $(document).ready(function() {
-  //console.log('jquery is working');
-
-  // Fade out gradients every 60 seconds
-  $('.gradientOne').animate({ opacity:0 }, 60000 );
-  $('.gradientTwo').delay(60000).animate({ opacity: 0 }, 60000);
-  $('.gradientThree').delay(120000).animate({ opacity: 0}, 60000);
-
- });
-
-
-  // Checking element is selected
- /* if ( $( '.gradientOne' ).length) {
-    console.log('jquery' ); 
-  } */
 }
 
 // The star object
 function Star() {
   this.color = [200, 200, 200, 100]; // color is an array in javascript
-  this.diameter = random(.5,2); // diameter of each star ellipse
+  this.diameter = random(0,2); // diameter of each star ellipse
   this.degree = random(-360, 360);
   this.radius = random(-width/1.2, width/1.2);
   this.x = centerX + (this.radius * cos(radians(this.degree)));
@@ -131,6 +113,8 @@ Star.prototype.update = function() {
 // update rotation based on song time / duration
 function updateIncrement() {
   currentTime = soundFile.currentTime();
+  //console.log(currentTime);
+
   duration = soundFile.duration();
   var myIncrement = map(currentTime, 0, duration, 0, 360);
   if (isNaN(myIncrement)) {
@@ -139,4 +123,28 @@ function updateIncrement() {
   else {
     increment = myIncrement;
   }
+
+  var fadeOutOne = 60;
+  var fadeOutTwo = 120;
+
+  // when document is loaded and ready, execute my jQuery manipulations!
+
+   $(document).ready(function() {
+  //console.log('jquery is working');
+  
+  // Fade out gradients every 60 seconds
+  $('.gradientOne').animate({ opacity:0 }, 30000 );
+
+  if (currentTime > fadeOutOne ) {
+  $('.gradientTwo').animate({ opacity: 0 }, 30000); 
+    }
+
+  if (currentTime > fadeOutTwo ){
+  $('.gradientThree').animate({ opacity: 0}, 60000); }
+ });
+
+     // Checking element is selected
+ /* if ( $( '.gradientOne' ).length) {
+    console.log('jquery' ); 
+  } */
 }
