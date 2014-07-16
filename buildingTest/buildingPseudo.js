@@ -8,7 +8,9 @@ var buildings = []; // array of buildings
  *  Every Window gets its own random onThreshold that does not change.
  *  So we just raise this number to turn more windows on, or lower to turn more off.
  */
-var onThreshold = Math.random();
+var onThreshold; // changing this to use NOISE just for fun!
+var xoff = 0;
+var xincrement = 0.01;
 
 // The Building Class
 var Building = function() {
@@ -86,7 +88,8 @@ function draw() {
 
     // flicker the windows on / off
     if (frameCount % 10 == 0) {
-      onThreshold = random();
+      onThreshold = noise(xoff);
+      xoff += xincrement;
     }
   }
 }
