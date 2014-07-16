@@ -35,7 +35,7 @@ function setup () {
   // create a bunch of star objects and add them to the array called stars
   // length of stars array will be linked to buffer size
   for (i =0; i<=numBands/2; i++) {
-    stars.push(new Star());
+    stars.push(new Star(i));
   }
 
   // sound
@@ -58,11 +58,11 @@ function draw() {
 
   // for every Star object in the array called 'stars'...
   for (i =0; i<stars.length; i++) {
-    stars[i].color[3] = i % 100;
+    stars[i].color[4] = map (freqValues[i], 120, 256, 0, 255);
     if (volume > .1) {
-      stars[i].diameter = map(freqValues[i], 120, 256, 0, 25.0)*volume;
+      stars[i].diameter = map(freqValues[i], 0, 256, 0, 50.0)*volume;
     } else {
-      stars[i].diameter = map(freqValues[i], 120, 256, 0, 15.0)*volume;
+      stars[i].diameter = map(freqValues[i], 0, 256, 0, 30.0)*volume;
     }
     // stars[i].color[3] = freqValues[i]/5; // map brightness to frequency value
     // move and draw the star
@@ -87,8 +87,17 @@ function draw() {
 }
 
 // The star object
-function Star() {
-  this.color = [200, 200, 200, 100]; // color is an array in javascript
+function Star(i) {
+  var totalStarCount = numBands/2;
+  if (i < totalStarCount/5 ){
+    this.color = [191, 214, 236, 200]; // light blue
+  }
+  else if (i < totalStarCount/2){
+    this.color = [235, 215, 224, 200]; // light red
+  }
+  else {
+    this.color = [252, 238, 223, 200]; // light yellow
+  }
   this.diameter = random(0,2); // diameter of each star ellipse
   this.degree = random(-360, 360);
   this.radius = random(-width/1.2, width/1.2);
