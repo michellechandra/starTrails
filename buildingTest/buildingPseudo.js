@@ -2,7 +2,7 @@
 
 
 var buildings = []; // array of buildings
-
+var numberOfBuildings = 80;
 /**
  *  The threshold for whether windows will be on/off is between 0.0 and 1.0.
  *  Every Window gets its own random onThreshold that does not change.
@@ -12,18 +12,27 @@ var onThreshold; // changing this to use NOISE just for fun!
 var xoff = 0;
 var xincrement = 0.01;
 
+
+// called during setup
+function createBuildings(numberOfBuildings) {
+  for (var i = 0; i < numberOfBuildings; i++){
+    buildings.push( new Building() );
+  }
+};
+
 // The Building Class
 var Building = function() {
-  this.height = random(10, 100);
-  this.width = random(10,100);
+  // these are important to position the range of the buildings
+  this.height = random(40, 120);
+  this.width = this.height / random(1.2, 3);
   this.xPos = random(0, window.width);
-  this.yPos = random(0, window.height);
+  this.yPos = random(windowHeight, windowHeight-40); // align the bottom of the buildings
 
-  this.c = [10,10,10];
+  this.c = random(0,50);
 
   // creates an array of this buildings' windows
   this.windows = [];
-  this.createWindows(this.xPos, this.yPos, this.width, this.height);
+  this.createWindows(this.xPos, this.yPos - this.height, this.width, this.height);
 };
 
 // called by every Building when they are instantiated
@@ -40,33 +49,27 @@ Building.prototype.createWindows = function(bX, bY, bW, bH) {
 
 Building.prototype.update = function() {
   fill(0);
-  rect(this.xPos, this.yPos, this.width, this.height);
+  rect(this.xPos, this.yPos, this.width, -this.height);
   for (i = 0; i < this.windows.length; i++) {
     this.windows[i].update();
   }
 };
 
-// called during setup
-function createBuildings(numberOfBuildings) {
-  for (var i = 0; i < numberOfBuildings; i++){
-    buildings.push( new Building() );
-  }
-};
 
 // The Window Class
 var Window = function(_x, _y, _w, _h) {
-  this.c = [200,200,200];
+  this.c = random(170,250);
   this.x = _x;
   this.y = _y;
   this.w = _w;
   this.h = _h;
   rect(this.x, this.y, this.w, this.h);
-  this.onThreshold = random();
+  this.onThreshold = random(); // each building has an unchanging onThreshold betw 0.0 and 1.0
 };
 
 Window.prototype.update = function(){
   if (this.onThreshold > onThreshold) {
-    fill(250,250,0);
+    fill(this.c);
   } else {
     fill(0);
   }
@@ -76,8 +79,8 @@ Window.prototype.update = function(){
 
 // code for setup
 function setup() {
-  createCanvas(400,400);
-  createBuildings(10);
+  createCanvas(windowWidth, windowHeight);
+  createBuildings(numberOfBuildings);
   noStroke();
 }
 
