@@ -262,7 +262,7 @@ function Star() {
    // NOTE this line of code for this.x will make an ellipse: 
     
 
-    if (this.degree >= TWO_PI && this.degree <= PI) {
+    if (this.degree >= 180 && this.degree <= 0) {
       this.x = centerX + (((this.radius)*1.25) * cos(radians(this.degree)));
       this.y = centerY + (((this.radius)*3) * sin(radians(this.degree + increment)));
   //this.x = centerX + (this.radius * cos(radians(this.degree));

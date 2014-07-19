@@ -5,13 +5,13 @@
 		<title>Star Trails Music Visualization</title>
   <script language="javascript" type="text/javascript" src="p5.js"></script>
   <script language="javascript" type="text/javascript" src="p5sound.js"></script> 
-  <script language="javascript" type="text/javascript" src="sketchjquery.js"></script> 
+  <script language="javascript" type="text/javascript" src="sketchcircle.js"></script> 
   <script language="javascript" type="text/javascript" src="jquery-1.11.1.js"></script>
   <style type="text/css">
    
     /* SUNRISE */
 
-    .gradientOne {
+   /* .gradientOne {
     opacity: 1;  
     position: fixed;
     left: 0; top: 0; right: 0; bottom: 0;
@@ -20,11 +20,11 @@
      background: ms-linear-gradient(rgba(35, 48, 67, 1), rgba(47, 80, 115, 1), rgba(115, 136, 135, 1), rgba(196, 86, 61, 1) 85%, rgba(96, 34, 49, 1) 95%);
      background: o-linear-gradient(rgba(35, 48, 67, 1), rgba(47, 80, 115, 1), rgba(115, 136, 135, 1), rgba(196, 86, 61, 1) 85%, rgba(96, 34, 49, 1) 95%);
     z-index: -6;
-  }
+  } */
 
     /* TWILIGHT */
 
-    .gradientTwo { 
+    .gradientTwo, .gradientOne { 
     position: fixed;
     left: 0; top: 0; right: 0; bottom: 0;
     background: -webkit-linear-gradient(rgba(22, 34, 60, 1), rgba(41, 58, 86, 1) 80%, rgba(29, 86, 141, 1)) 90%;
@@ -60,14 +60,14 @@
     opacity: 1;
     z-index:-9;
     }
-     
+     /* <div class="gradientOne"></div> */
 
     </style>
 
 </head>
 <body id="body">
 
-  <div class="gradientOne"></div>
+
   <div class="gradientTwo"></div>
   <div class="gradientThree"></div>
   <div class="gradientFour"></div>
