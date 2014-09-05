@@ -22,9 +22,11 @@ var numBands = 1024;
 // array of all the frequency values
 var freqValues = [];
 
+function preload() {
+  soundFile = loadSound('Chris_Zabriskie_-_06_-_Divider.mp3');
+}
+
 function setup () {
-  // p5 sound
-  soundFile = new SoundFile('Chris_Zabriskie_-_06_-_Divider.mp3');
   var thisCanvas = createCanvas(windowWidth, windowHeight);
   ellipseMode(CENTER);
   noStroke();
@@ -34,65 +36,60 @@ function setup () {
 
   // create a bunch of star objects and add them to the array called stars
   // length of stars array will be linked to buffer size
-  for (i =0; i<=numBands/2; i++) {
+  for (var i =0; i<=numBands/2; i++) {
     stars.push(new Star(i));
   }
 
   // sound
   soundFile.play();
-  fft = new FFT(.01, numBands);
-  amplitude = new Amplitude(.985); // amplitude takes 'smoothing'
-  
+  fft = new p5.FFT(.01, numBands);
+  amplitude = new p5.Amplitude(.985); // amplitude takes 'smoothing'
 }
 
 function draw() { 
 
   volume = amplitude.getLevel();
 
-  //var bRed = map(currentTime, 0, duration, 20, 0);
-  //var bBlue = map(currentTime, 0, duration, 20, 40);
-
   updateIncrement();
 
-  freqValues = fft.processFreq();
+  freqValues = fft.analyze();
+  var bass = fft.getEnergy('bass');
+  var lowMid = fft.getEnergy('lowMid');
+  var mid = fft.getEnergy('mid');
 
   // for every Star object in the array called 'stars'...
-  for (i =0; i<stars.length; i++) {
+
+  for (var i = 0; i<stars.length; i++) {
     stars[i].color[4] = map (freqValues[i], 120, 256, 0, 255);
-    if (volume > .1) {
-      stars[i].diameter = map(freqValues[i], 0, 256, 0, 50.0)*volume;
-    } else {
-      stars[i].diameter = map(freqValues[i], 0, 256, 0, 30.0)*volume;
+    if (i < stars.length/3) {
+      stars[i].diameter = volume*map(bass, 150, 210, 0, 5);
     }
-    // stars[i].color[3] = freqValues[i]/5; // map brightness to frequency value
-    // move and draw the star
+    else if (i < 2*stars.length/3) {
+      stars[i].diameter = volume*map(lowMid, 140, 200, 0, 5);
+    }
+    else {
+      stars[i].diameter = volume*map(mid, 0, 256, 0, 5);
+    }
     stars[i].update();
   }
 
- /*  Old Background code no longer using 
-
-  var bRed = map(currentTime, 0, duration, 20, 0);
-  var bBlue = map(currentTime, 0, duration, 20, 40);
-  if (frameCount % 40 == 0 ){
-    if (duration > 0) {
-      background(bRed,0,bBlue,10);
-    } else if (frameCount % 10 == 0) {
-      background(0,0,0,2);
-    }
-  }   */
-
-/* if (frameCount % 20 == 0 ){
-      background(0,0,0,1);
-    } */
+  // for (var i =0; i<stars.length; i++) {
+  //   stars[i].color[4] = map (freqValues[i], 120, 256, 0, 255);
+  //   if (volume > .1) {
+  //     stars[i].diameter = map(freqValues[i], 0, 256, 0, 50.0)*volume;
+  //   } else {
+  //     stars[i].diameter = map(freqValues[i], 0, 256, 0, 30.0)*volume;
+  //   }
+  //   stars[i].update();
+  // }
 }
 
 // The star object
 function Star(i) {
-  var totalStarCount = numBands/2;
-  if (i < totalStarCount/5 ){
-    this.color = [191, 214, 236, 200]; // light blue
+  if (i < stars.length/3 ){
+   this.color = [191, 214, 236, 200]; // light blue
   }
-  else if (i < totalStarCount/2){
+  else if (i < 2*stars.length/3){
     this.color = [235, 215, 224, 200]; // light red
   }
   else {
@@ -114,7 +111,6 @@ Star.prototype.update = function() {
     noStroke;
     // draw an ellipse at the new x and y position
     fill(this.color);
-   // stroke(this.color);
     ellipse(this.x, this.y, this.diameter, this.diameter);
 }
 
@@ -122,12 +118,10 @@ Star.prototype.update = function() {
 // update rotation based on song time / duration
 function updateIncrement() {
   currentTime = soundFile.currentTime();
-  //console.log(currentTime);
-
   duration = soundFile.duration();
   var myIncrement = map(currentTime, 0, duration, 0, 360);
   if (isNaN(myIncrement)) {
-    console.log('not ready');
+    console.log('loading...');
   }
   else {
     increment = myIncrement;
@@ -151,9 +145,4 @@ function updateIncrement() {
   if (currentTime > fadeOutTwo ){
   $('.gradientThree').animate({ opacity: 0}, 60000); }
  });
-
-     // Checking element is selected
- /* if ( $( '.gradientOne' ).length) {
-    console.log('jquery' ); 
-  } */
 }
