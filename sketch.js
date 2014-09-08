@@ -23,7 +23,7 @@ var numBands = 1024;
 var freqValues = [];
 
 function preload() {
-  soundFile = loadSound('Chris_Zabriskie_-_06_-_Divider.mp3');
+  soundFile = loadSound('Lee_Rosevere_-_02_-_Waltz_of_the_Stars_valse_des_toiles.mp3');
 }
 
 function setup () {
@@ -60,15 +60,15 @@ function draw() {
   // for every Star object in the array called 'stars'...
 
   for (var i = 0; i<stars.length; i++) {
-    stars[i].color[4] = map (freqValues[i], 120, 256, 0, 255);
+    stars[i].color[4] = (map(freqValues[i], 120, 256, 0, 100))*volume;
     if (i < stars.length/3) {
-      stars[i].diameter = volume*map(bass, 150, 210, 0, 5);
+      stars[i].diameter = (map(bass, 50, 244, 6, 11))*volume;
     }
-    else if (i < 2*stars.length/3) {
-      stars[i].diameter = volume*map(lowMid, 140, 200, 0, 5);
+    else if (i < stars.length/2) {
+      stars[i].diameter = (map(lowMid, 68, 215, 4, 8))*volume;
     }
     else {
-      stars[i].diameter = volume*map(mid, 0, 256, 0, 5);
+      stars[i].diameter = (map(mid, 60, 160, 0, 1))*volume;
     }
     stars[i].update();
   }
@@ -86,14 +86,17 @@ function draw() {
 
 // The star object
 function Star(i) {
-  if (i < stars.length/3 ){
-   this.color = [191, 214, 236, 200]; // light blue
+
+  var totalStarCount = numBands/2;
+   if (i < totalStarCount/5 ){
+   this.color = [143, 180, 182, 255]; // gray teal
   }
-  else if (i < 2*stars.length/3){
-    this.color = [235, 215, 224, 200]; // light red
+     else if (i < totalStarCount/2){
+ // else if (i < 2*stars.length/3){
+    this.color = [42, 63, 85, 255];
   }
   else {
-    this.color = [252, 238, 223, 200]; // light yellow
+      this.color = [227, 226, 208, 255];
   }
   this.diameter = random(0,2); // diameter of each star ellipse
   this.degree = random(-360, 360);
@@ -127,8 +130,8 @@ function updateIncrement() {
     increment = myIncrement;
   }
 
-  var fadeOutOne = 60;
-  var fadeOutTwo = 120;
+  var fadeOutOne = 40;
+  var fadeOutTwo = 90;
 
   // when document is loaded and ready, execute my jQuery manipulations!
 
@@ -142,7 +145,7 @@ function updateIncrement() {
   $('.gradientTwo').animate({ opacity: 0 }, 30000); 
     }
 
-  if (currentTime > fadeOutTwo ){
-  $('.gradientThree').animate({ opacity: 0}, 60000); }
+ /* if (currentTime > fadeOutTwo ){
+  $('.gradientThree').animate({ opacity: 0}, 60000); } */
  });
 }
