@@ -7,6 +7,7 @@ http://creativecommons.org/licenses/GPL/2.0/
 
 // Creative JavaScript wiki on instance mode: https://github.com/lmccart/itp-creative-js/wiki/Week-5
 // Maybe Landscape changes on beat detection instead of volume?
+// oscillate noise function based on sine wave
 
 var offset = 100;
 var rootn;
@@ -14,7 +15,6 @@ var xstep = 5;
 var ystep = 5;
 var windowScreen;
 var dvec;
-
 // p5 sound variables
 var soundFile;
 var fft;
@@ -77,11 +77,10 @@ function draw() {
      beginShape();
 
     for (var i = 0; i < width; i += xstep) {
-        volume = amplitude.getLevel();
       
+      volume = amplitude.getLevel();
       
-      var n = noise(rootn.x + .019*i, rootn.y + .02*j)*volume; //ystep); 
-      
+      var n = noise(rootn.x + .019*i, rootn.y + .02*j)*volume; //ystep);   
       // calculating 2D noise by calculating x, y values in two for loops (noise grid)
 
       var tmpy = (offset + volume) * (n - 1) + j; // can affect tmpy value by multiplying by volume
