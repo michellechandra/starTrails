@@ -1,4 +1,4 @@
-// p5sound variables
+// p5sound variable
 var soundFile;
 
 var centerX;
@@ -15,15 +15,19 @@ var increment = 0; // map(currentTime, 0, duration, 0, 360)
 var fft;
 
 var amplitude;
-var volume;
+var volume = 0;
 
-var numBands = 1024;
+var numBands = 512;
 
 // array of all the frequency values
 var freqValues = [];
 
+var lastVol;
+var lastHigh;
+
 function preload() {
   soundFile = loadSound('Lee_Rosevere_-_02_-_Waltz_of_the_Stars_valse_des_toiles.mp3');
+  //soundFile = loadSound('Schoenberg_03.mp3');
 }
 
 function setup () {
@@ -47,7 +51,8 @@ function setup () {
 }
 
 function draw() { 
-
+  
+  // get volume from the amplitude process
   volume = amplitude.getLevel();
 
   updateIncrement();
@@ -56,22 +61,32 @@ function draw() {
   var bass = fft.getEnergy('bass');
   var lowMid = fft.getEnergy('lowMid');
   var mid = fft.getEnergy('mid');
+  var high = fft.getEnergy('highMid');
 
   // for every Star object in the array called 'stars'...
 
   for (var i = 0; i<stars.length; i++) {
-    stars[i].color[4] = (map(freqValues[i], 120, 256, 0, 100))*volume;
-    if (i < stars.length/3) {
-      stars[i].diameter = (map(bass, 50, 244, 6, 11))*volume;
+    //stars[i].color[4] = map(freqValues[i], 120, 256, 0, 50)*volume;
+    if (i < stars.length/3 && volume - lastVol > 0.01) {
+      stars[i].diameter = map(bass, 50, 244, 15, 20)*volume;
+      stars[i].increment = map(bass, 50, 244, 0, 360)*volume;
+      stars[i].color[4] = map(bass, 50, 244, 0, 50)*volume;  // this isn't noticeably affecting alpha
     }
-    else if (i < stars.length/2) {
-      stars[i].diameter = (map(lowMid, 68, 215, 4, 8))*volume;
+    else if (i < stars.length/2 && high - lastHigh > 0.04) {
+      stars[i].diameter = map(lowMid, 68, 215, 6, 13)*volume;
+      stars[i].increment = map(lowMid, 68, 215, 0, 360)*volume;
+      stars[i].color[4] = map(lowMid, 68, 215, 0, 50)*volume;
     }
     else {
-      stars[i].diameter = (map(mid, 60, 160, 0, 1))*volume;
+      stars[i].diameter = map(mid, 60, 160, 0, 1)*volume;
+      stars[i].increment = map(mid, 60, 160, 0, 360)*volume;
+      stars[i].color[4] = map(mid, 60, 160, 0, 50)*volume;
     }
     stars[i].update();
   }
+
+    lastVol = volume;
+  lastHigh = high;
 
   // for (var i =0; i<stars.length; i++) {
   //   stars[i].color[4] = map (freqValues[i], 120, 256, 0, 255);
@@ -89,16 +104,16 @@ function Star(i) {
 
   var totalStarCount = numBands/2;
    if (i < totalStarCount/5 ){
-   this.color = [143, 180, 182, 255]; // gray teal
+   this.color = [143, 180, 182]; // gray teal
   }
      else if (i < totalStarCount/2){
  // else if (i < 2*stars.length/3){
-    this.color = [42, 63, 85, 255];
+    this.color = [42, 63, 85];
   }
   else {
-      this.color = [227, 226, 208, 255];
+      this.color = [227, 226, 208];
   }
-  this.diameter = random(0,2); // diameter of each star ellipse
+  this.diameter;
   this.degree = random(-360, 360);
   this.radius = random(-width/1.2, width/1.2);
   this.x = centerX + (this.radius * cos(radians(this.degree)));
@@ -111,7 +126,7 @@ Star.prototype.update = function() {
     // update the x and y position based on the increment
     this.x = centerX + (this.radius * cos(radians(this.degree + increment)));
     this.y = centerY + (this.radius * sin(radians(this.degree + increment)));
-    noStroke;
+    //noStroke;
     // draw an ellipse at the new x and y position
     fill(this.color);
     ellipse(this.x, this.y, this.diameter, this.diameter);
