@@ -144,7 +144,6 @@ function setup() {
     var lowMid = fft.getEnergy('lowMid');
     var mid = fft.getEnergy('mid');
     var high = fft.getEnergy('highMid');
-
     // for every Star object in the array called 'stars'...
 
     for (var i = 0; i<stars.length; i++) {
@@ -205,6 +204,7 @@ function setup() {
     // update the x and y position based on the increment
     this.x = centerX + (this.radius * cos(radians(this.degree + increment)));
     this.y = centerY + (this.radius * sin(radians(this.degree + increment)));
+    console.log(this.x, this.y);
     //noStroke;
     // draw an ellipse at the new x and y position
     fill(this.color);
