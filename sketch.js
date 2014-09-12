@@ -113,7 +113,7 @@ function Star(i) {
   else {
       this.color = [227, 226, 208];
   }
-  this.diameter;
+  this.diameter = 0;
   this.degree = random(-360, 360);
   this.radius = random(-width/1.2, width/1.2);
   this.x = centerX + (this.radius * cos(radians(this.degree)));

@@ -33,6 +33,7 @@ function setup() {
   amplitude = new p5.Amplitude(.985); // amplitude takes 'smoothing'
 
   var s0 = function( sketch ) { 
+
     var volume = 0;
 
     var offset = 100;
@@ -51,7 +52,7 @@ function setup() {
     }
    
     sketch.draw = function() {
-      clear(); // transparent background
+      sketch.clear(); // transparent background
 
       var dx = 5;       //map(mouseX, 0, displayWidth, -5, 5);
       var dy = 3;       //map(mouseY, 0, displayHeight, 5, -5);
@@ -70,14 +71,14 @@ function setup() {
     
     dvec.x = dx;
     dvec.y = dy;
-    windowScreen.sub(dvec);
-    rootn.add(createVector(.0019*dx, .02*dy));  
+    sketch.windowScreen.sub(dvec);
+    sketch.rootn.add(createVector(.0019*dx, .02*dy));  
 
     // using the vector to store x and y values
 
     for (var j = 0; j < height/2; j += ystep) {
 
-       noFill();
+       sketch.noFill();
 
        beginShape();
 
@@ -91,7 +92,7 @@ function setup() {
         var tmpy = (offset + volume) * (n - 1) + j; // can affect tmpy value by multiplying by volume
         // or try affecting the noise value calculations with sound values instead
         //stroke(255);
-        stroke(map(n, 0, .6, 180, 250))*volume;
+        sketch.stroke(map(n, 0, .6, 180, 250))*volume;
       //  stroke(205, 205, 205, 205)*volume;
        // strokeWeight(map(n, 0, .6, 3, 10)*volume);
         vertex(i, height - tmpy);
@@ -102,7 +103,7 @@ function setup() {
 
     }
   }
-  };
+};
 
   var myp5_0 = new p5(s0, 'canvas0');
 
@@ -122,8 +123,8 @@ function setup() {
 
     sketch.setup = function() {
       var thisCanvas = sketch.createCanvas(windowWidth, windowHeight);
-      ellipseMode(CENTER);
-      noStroke();
+      sketch.ellipseMode(CENTER);
+      sketch.noStroke();
 
       centerX = width/2; // center of the circle
       centerY = height/2; // center of the circle
@@ -185,30 +186,30 @@ function setup() {
 
     var totalStarCount = numBands/2;
      if (i < totalStarCount/5 ){
-     this.color = [143, 180, 182]; // gray teal
+     this.color = [143, 180, 182, 255]; // gray teal
     }
     else if (i < totalStarCount/2){
-      this.color = [42, 63, 85];
+      sketch.this.color = [42, 63, 85, 255];
     }
     else {
-      this.color = [227, 226, 208];
+      sketch.this.color = [227, 226, 208, 255];
     }
-    this.diameter;
-    this.degree = random(-360, 360);
-    this.radius = random(-width/1.2, width/1.2);
-    this.x = centerX + (this.radius * cos(radians(this.degree)));
-    this.y = centerY + (this.radius * sin(radians(this.degree)));
+    sketch.this.diameter;
+    this.degree = sketch.random(-360, 360);
+    sketch.this.radius = random(-width/1.2, width/1.2);
+    sketch.this.x = centerX + (this.radius * cos(radians(this.degree)));
+    sketch.this.y = centerY + (this.radius * sin(radians(this.degree)));
   }
 
   Star.prototype.update = function() {
     // update the x and y position based on the increment
-    this.x = centerX + (this.radius * cos(radians(this.degree + increment)));
-    this.y = centerY + (this.radius * sin(radians(this.degree + increment)));
-    console.log(this.x, this.y);
-    //noStroke;
+    sketch.this.x = centerX + (this.radius * cos(radians(this.degree + increment)));
+    sketch.this.y = centerY + (this.radius * sin(radians(this.degree + increment)));
+  //  console.log(this.x, this.y);
+    sketch.noStroke;
     // draw an ellipse at the new x and y position
-    fill(this.color);
-    ellipse(this.x, this.y, this.diameter, this.diameter);
+    sketch.fill(this.color);
+    sketch.ellipse(this.x, this.y, this.diameter, this.diameter);
   }
 
 
@@ -243,7 +244,7 @@ function startSound() {
 
   // when document is loaded and ready, execute my jQuery manipulations!
 
-   // $(document).ready(function() {
+    $(document).ready(function() {
   //console.log('jquery is working');
   
   // Fade out gradients every 60 seconds
