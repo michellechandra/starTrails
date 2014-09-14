@@ -48,7 +48,7 @@ var s0 = function(sketch) {
     soundFile = sketch.loadSound('Lee_Rosevere_-_02_-_Waltz_of_the_Stars_valse_des_toiles.mp3', function() {
       soundFile.play();
     });
-    
+
  	  var thisCanvas = sketch.createCanvas(sketch.windowWidth, sketch.windowHeight);
     thisCanvas.position(0,0);
     thisCanvas.id("canvas0");
@@ -64,8 +64,8 @@ var s0 = function(sketch) {
 	sketch.draw = function() {
  	 sketch.clear(); // transparent background
    var offset = 100;
-   var xstep = 5;
-   var ystep = 5;
+   var xstep = 10;
+   var ystep = 10;
 
 
  	 // don't need these variables outside of this sketch, so no need to namespace
@@ -211,7 +211,7 @@ function updateIncrement() {
   duration = soundFile.duration();
   var myIncrement = sketch.map(currentTime, 0, duration, 0, 360);
   if (isNaN(myIncrement)) {
-    console.log('loading...');
+   // console.log('loading...');
   }
   else {
     increment = myIncrement;
