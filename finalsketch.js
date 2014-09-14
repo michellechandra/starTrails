@@ -196,9 +196,9 @@ function setup() {
     }
     sketch.this.diameter;
     this.degree = sketch.random(-360, 360);
-    sketch.this.radius = random(-width/1.2, width/1.2);
-    sketch.this.x = centerX + (this.radius * cos(radians(this.degree)));
-    sketch.this.y = centerY + (this.radius * sin(radians(this.degree)));
+    this.radius = random(-width/1.2, width/1.2);
+    this.x = centerX + (this.radius * cos(radians(this.degree)));
+    this.y = centerY + (this.radius * sin(radians(this.degree)));
   }
 
   Star.prototype.update = function() {
