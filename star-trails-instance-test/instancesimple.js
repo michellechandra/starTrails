@@ -6,20 +6,6 @@ http://creativecommons.org/licenses/by-sa/3.0/
 http://creativecommons.org/licenses/GPL/2.0/
 */
 
-/* 
-To Do:
-Figure out the degree or x,y position so can fade out stars when reach sea landscape
-Change shapes from circles to squares at certain points in music and rotate
-Maybe have less stars and more clear delineation between shapes
-Change their degree so jump forward more if song changes
-Less stars/bigger stars
-See individual shapes, have it look less like a line is being drawn
-Larger shapes
-Change color of stars at certain points?
-Create Arc/Mountain shape instead of flat line
-
-*/
-
 
 // Global p5.sound variables \\
 var volume = 0.01; // initial starting volume of amplitude (necessary for p5.sound)
