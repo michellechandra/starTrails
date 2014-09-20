@@ -79,7 +79,7 @@ var s0 = function(sketch) {
    dvec.x = dx;
    dvec.y = dy;
    windowScreen.sub(dvec);  // remove vector line from screen 
-   rootn.add(sketch.createVector(.019*dx, .1*dy));  // add vecotr line to screen
+   rootn.add(sketch.createVector(.019*dx, .1*dy));  // add vector line to screen
 
       // using vector to store y values
       for (var j = 0; j < sketch.height/2; j += ystep) {
@@ -167,7 +167,7 @@ sketch.draw = function() {
     if (i < stars.length/3 && (volume - lastVol > 0.01) ) {
       stars[i].diameter = sketch.map(bass, 50, 244, 15, 20)*volume;
       stars[i].increment = sketch.map(bass, 50, 244, 0, 360)*volume;
-      stars[i].color[4] = sketch.map(bass, 50, 244, 0, 255)*volume;  // this isn't noticeably affecting alpha
+      stars[i].color[4] = sketch.map(bass, 50, 244, 0, 255)*volume;  
     }
     else if (i < stars.length/2 && high - lastHigh > 0.04) {
       stars[i].diameter = sketch.map(lowMid, 68, 215, 6, 13)*volume;
