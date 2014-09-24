@@ -9,7 +9,7 @@ http://creativecommons.org/licenses/GPL/2.0/
 
 // Global p5.sound variables \\
 var volume = 0.01; // initial starting volume of amplitude (necessary for p5.sound)
-var numBands = 256; // numer of frequency waves we are visualizing
+var numBands = 512; // number of frequency waves we are visualizing
 var soundFile;  // variable to contain song we are visualizing
 var fft;   
 var amplitude;  
@@ -31,13 +31,13 @@ var s0 = function(sketch) {
   var dvec;
 
   // Load our song to be visualized and play in callback function
-	sketch.setup = function() {
+  sketch.setup = function() {
    soundFile = sketch.loadSound('Lee_Rosevere_-_02_-_Waltz_of_the_Stars_valse_des_toiles.mp3', function() {
      soundFile.play();
    });
     
     // create a canvas for this sketch that is the width of the user's browser window
- 	  var thisCanvas = sketch.createCanvas(sketch.windowWidth, sketch.windowHeight);
+    var thisCanvas = sketch.createCanvas(sketch.windowWidth, sketch.windowHeight);
 
     // using p5 dom library to position canvas on screen 
     thisCanvas.position(0,0);
@@ -46,9 +46,9 @@ var s0 = function(sketch) {
     thisCanvas.id("canvas0");
 
     // create vectors to store x,y values of our landscape
-	  windowScreen = sketch.createVector(0,0);
-	  rootn = sketch.createVector(0, 0); 
-	  dvec = sketch.createVector(0,0);
+    windowScreen = sketch.createVector(0,0);
+    rootn = sketch.createVector(0, 0); 
+    dvec = sketch.createVector(0,0);
      
     // call p5 sound fft function for the number of waves to be analyzed
     fft = new p5.FFT(.01, numBands);
@@ -56,24 +56,24 @@ var s0 = function(sketch) {
     // call p5 sound library function to get the amplitude of our song
     amplitude = new p5.Amplitude(.985); 
 
-	}
+  }
 
-	sketch.draw = function() {
+  sketch.draw = function() {
 
- 	 sketch.clear(); // transparent background
+   sketch.clear(); // transparent background
 
-   // offset our landscape 150 below middle of screen
-   var offset = 150;
+   // offset our landscape below center of screen
+   var offset = 180;
 
    // how long will each vertice be in line drawn for landscape
    // changing this value makes landscape smoother like water or more jagged like terrain
    var xstep = 10;
 
-   // how far apart the lines are of our landscape
-   var ystep = 10;
+   // how far apart the landscape lines are 
+   var ystep = 8;
   
    // changing these values affects how fast the landscape lines are added to the screen
- 	 var dx = 3*volume;       
+   var dx = 3*volume;       
    var dy = 5*volume;       
 
    dvec.x = dx;
@@ -85,16 +85,16 @@ var s0 = function(sketch) {
       for (var j = 0; j < sketch.height/2; j += ystep) {
         
         // Drawing lines, don't need fill
-    	  sketch.noFill();
+        sketch.noFill();
         
         // using beginShape() to draw landscape lines
-		    sketch.beginShape();
+        sketch.beginShape();
 
       // using vector to store x values
-    	for (var i = 0; i < sketch.width; i += xstep) {
+      for (var i = 0; i < sketch.width; i += xstep) {
           
           // getting amplitude level of song to move the landscape to the volume
-     	    volume = amplitude.getLevel();
+          volume = amplitude.getLevel();
           
           // landscape line organic motion created using noise function affected by volume
           var n = sketch.noise(rootn.x + .019*i, rootn.y + .02*j)*volume; 
@@ -102,12 +102,15 @@ var s0 = function(sketch) {
           var tmpy = offset * (n - 1) + j; 
 
           // mapping stroke and stroke weight to volume
-          sketch.stroke(sketch.map(n, 0, .6, 200, 255))*volume;
+          var colorLines = [179, 205, 230, 255];
+          sketch.stroke(colorLines);
+          colorLines[3] = sketch.map(n,0, .6, 200, 255)*volume;
+          //sketch.stroke(sketch.map(n, 0, .6, 200, 255))*volume;
           sketch.strokeWeight(sketch.map(n, 0, .6, .25, 5));
 
           // our shape is just a bunch of vertex points!
           sketch.vertex(i, sketch.height - tmpy);
-    	}
+      }
     // end of drawing line shape
     sketch.endShape();
 
@@ -164,20 +167,29 @@ sketch.draw = function() {
   for (var i = 0; i<stars.length; i++) {
     
     // map different sizes and colors to different stars depending on FFT waves they represent
-    if (i < stars.length/3 && (volume - lastVol > 0.01) ) {
+    if (i < stars.length/3 && (volume - lastVol > 0.01) && (stars[i].y < sketch.height/1.6) ) {
       stars[i].diameter = sketch.map(bass, 50, 244, 15, 20)*volume;
       stars[i].increment = sketch.map(bass, 50, 244, 0, 360)*volume;
-      stars[i].color[4] = sketch.map(bass, 50, 244, 0, 255)*volume;  
+      stars[i].color[3] = sketch.map(bass, 50, 244, 100, 255)*volume;  
     }
-    else if (i < stars.length/2 && high - lastHigh > 0.04) {
+    else if (i < stars.length/2 && high - lastHigh > 0.04 && (stars[i].y < sketch.height/1.6)) {
       stars[i].diameter = sketch.map(lowMid, 68, 215, 6, 13)*volume;
       stars[i].increment = sketch.map(lowMid, 68, 215, 0, 360)*volume;
-      stars[i].color[4] = sketch.map(lowMid, 68, 215, 0, 255)*volume;
+      stars[i].color[3] = sketch.map(lowMid, 68, 215, 100, 255)*volume;
     }
-    else {
+    else if (stars[i].y < sketch.height/1.6) {
       stars[i].diameter = sketch.map(mid, 60, 160, 0, 1)*volume;
       stars[i].increment = sketch.map(mid, 60, 160, 0, 360)*volume;
-      stars[i].color[4] = sketch.map(mid, 60, 160, 0, 255)*volume;
+      stars[i].color[3] = sketch.map(mid, 60, 160, 100, 255)*volume;
+    }
+    else if (stars[i].y > sketch.height/1.4 && stars[i].y < sketch.height/1.6) {
+      stars[i].color[3] = 3;
+    }
+    else if (stars[i].y > sketch.height/1.35 && stars[i].y < sketch.height/1.4) {
+      stars[i].color[3] = 2;
+    }
+    else if (stars[i].y > sketch.height/1.34) {
+      stars[i].color[3] = 0;
     }
     stars[i].update();  
   }
@@ -196,14 +208,17 @@ function Star(i) {
   var totalStarCount = numBands/2;
 
   if (i < totalStarCount/5 ){
-   this.color = [143, 180, 182, 255]; // gray teal
-  }
+   //this.color = [143, 180, 182, 255]; // gray teal
+   this.color = [9, 91, 163, 255];  // bright blue
+   }
   
   else if (i < totalStarCount/2){
-    this.color = [42, 63, 85, 255];
+    //this.color = [42, 63, 85, 255];
+    this.color = [179, 205, 230, 255]; // light blue
   }
   else {
-      this.color = [227, 226, 208, 255];
+      //this.color = [227, 226, 208, 255];
+      this.color = [208, 192, 191, 255]; // tan
   } 
   this.color;
 
@@ -272,7 +287,7 @@ function updateIncrement() {
   $('.gradientOne').animate({ opacity:0 }, 30000 );
  });
 
-	};
+  };
 
 var p5nosound = new p5(s1); // stores a reference to s0 sketch and initializes an instance of p5
 
