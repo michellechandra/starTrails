@@ -9,7 +9,9 @@ var s0 = function( sketch ) {
 
   sketch.setup = function() {
     var myCanvas = sketch.createCanvas(sketch.windowWidth, sketch.windowHeight);
-  //  soundFile = sketch.loadSound('Lee_Rosevere_-_02_-_Waltz_of_the_Stars_valse_des_toiles.mp3');
+   soundFile = sketch.loadSound('Lee_Rosevere_-_02_-_Waltz_of_the_Stars_valse_des_toiles.mp3', function() {
+    soundFile.play();
+   });
     myCanvas.position(0,0);
     myCanvas.id("canvas0");
    // soundFile.play();
