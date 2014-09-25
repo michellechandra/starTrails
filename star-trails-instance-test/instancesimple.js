@@ -19,6 +19,9 @@ var freqValues = [];  // storing freqValues in an array
 var lastVol;  // comparing previous and last volume
 var lastHigh;
 
+var stars = []; // array to hold array of star objects
+var increment = 0;  // value to increment our stars to complete circle shape
+
 ////////  ****** Start of LANDSCAPE Sketch by Oggy ported to p5.js as derivative sketch ******* \\\\\\\\\\
 
 // Working in p5 instance mode, start of Sketch 1 of two sketches
@@ -105,11 +108,12 @@ var s0 = function(sketch) {
           var colorLines = [179, 205, 230, 255];
           sketch.stroke(colorLines);
           colorLines[3] = sketch.map(n,0, .6, 200, 255)*volume;
-          //sketch.stroke(sketch.map(n, 0, .6, 200, 255))*volume;
-          sketch.strokeWeight(sketch.map(n, 0, .6, .25, 5));
 
+          // sketch.strokeWeight(sketch.map(n, 0, .6, .25, 5));
+          var yPoint = sketch.height - tmpy;
+          sketch.strokeWeight(sketch.map(yPoint, sketch.height/1.6, sketch.height, 0.1, 5 )*(volume + 0.2));
           // our shape is just a bunch of vertex points!
-          sketch.vertex(i, sketch.height - tmpy);
+          sketch.vertex(i, yPoint);
       }
     // end of drawing line shape
     sketch.endShape();
@@ -127,98 +131,59 @@ var p5withsound = new p5(s0); // stores a reference to s0 sketch and initializes
 // Working in p5 instance mode, start of Sketch 2 of two sketches
 var s1 = function(sketch) {
 
-var stars = []; // array to hold array of star objects
-var increment = 0;  // value to increment our stars to complete circle shape
-
-sketch.setup = function() {
+  sketch.setup = function() {
   
-  var myCanvas = sketch.createCanvas(sketch.windowWidth, sketch.windowHeight);
-  myCanvas.position(0,0);
-  myCanvas.id("canvas1");
+    var myCanvas = sketch.createCanvas(sketch.windowWidth, sketch.windowHeight);
+    myCanvas.position(0,0);
+    myCanvas.id("canvas1");
 
-  sketch.ellipseMode(sketch.CENTER);
-  sketch.noStroke();
+    sketch.ellipseMode(sketch.CENTER);
+    sketch.noStroke();
 
-  centerX = sketch.width/2; // center of the circle
-  centerY = sketch.height/2; // center of the circle
+    centerX = sketch.width/2; // center of the circle
+    centerY = sketch.height/2; // center of the circle
 
-  // create a bunch of star objects and add them to the array called stars
-  // length of stars array will be linked to buffer size
-  for (var i =0; i<=numBands/2; i++) {
-    stars.push(new Star(i));
+    // create a bunch of star objects and add them to the array called stars
+    // length of stars array will be linked to buffer size
+    for (var i = numBands/2-1; i>=0; i--) {
+      stars.push(new Star(i));
+    }
   }
-}
 
-sketch.draw = function() {
- 
-  updateIncrement();  // update increment value stars drawn according to song currentTime and duration
-  
-  // get frequency wave analysis and store in array
-  freqValues = fft.analyze();
-
-  // get frequency wave analysis for waves that correlate to certain sound types
-  var bass = fft.getEnergy('bass');
-  var lowMid = fft.getEnergy('lowMid');
-  var mid = fft.getEnergy('mid');
-  var high = fft.getEnergy('highMid');
-
-  // for every Star object in the array called 'stars'...
-
-  for (var i = 0; i<stars.length; i++) {
-    
-    // map different sizes and colors to different stars depending on FFT waves they represent
-    if (i < stars.length/3 && (volume - lastVol > 0.01) && (stars[i].y < sketch.height/1.6) ) {
-      stars[i].diameter = sketch.map(bass, 50, 244, 15, 20)*volume;
-      stars[i].increment = sketch.map(bass, 50, 244, 0, 360)*volume;
-      stars[i].color[3] = sketch.map(bass, 50, 244, 100, 255)*volume;  
-    }
-    else if (i < stars.length/2 && high - lastHigh > 0.04 && (stars[i].y < sketch.height/1.6)) {
-      stars[i].diameter = sketch.map(lowMid, 68, 215, 6, 13)*volume;
-      stars[i].increment = sketch.map(lowMid, 68, 215, 0, 360)*volume;
-      stars[i].color[3] = sketch.map(lowMid, 68, 215, 100, 255)*volume;
-    }
-    else if (stars[i].y < sketch.height/1.6) {
-      stars[i].diameter = sketch.map(mid, 60, 160, 0, 1)*volume;
-      stars[i].increment = sketch.map(mid, 60, 160, 0, 360)*volume;
-      stars[i].color[3] = sketch.map(mid, 60, 160, 100, 255)*volume;
-    }
-    else if (stars[i].y > sketch.height/1.4 && stars[i].y < sketch.height/1.6) {
-      stars[i].color[3] = 3;
-    }
-    else if (stars[i].y > sketch.height/1.35 && stars[i].y < sketch.height/1.4) {
-      stars[i].color[3] = 2;
-    }
-    else if (stars[i].y > sketch.height/1.34) {
-      stars[i].color[3] = 0;
-    }
-    stars[i].update();  
-  }
+  sketch.draw = function() {
    
+    updateIncrement();  // update increment value stars drawn according to song currentTime and duration
+    
+    // get frequency wave analysis and store in array
+    freqValues = fft.analyze();
+    // for every Star object in the array called 'stars'...
+    for (var i = stars.length-1; i>=0; i--) {
+      stars[i].update(freqValues, volume, i);
+    }
+
   // reset these variables  
   lastVol = volume;
-  lastHigh = high;
 
 }
 
 // The star constructor for each star object 
 // our (initial starting values), don't need to give a value here but can
 function Star(i) {
-  
   // assign color to our stars depending on which frequency waves they represent
   var totalStarCount = numBands/2;
 
-  if (i < totalStarCount/5 ){
-   //this.color = [143, 180, 182, 255]; // gray teal
-   this.color = [9, 91, 163, 255];  // bright blue
+  // assign types
+  if (i < totalStarCount/4 ){
+     this.color = [143, 180, 182, 255]; // gray teal
    }
-  
+
   else if (i < totalStarCount/2){
     //this.color = [42, 63, 85, 255];
     this.color = [179, 205, 230, 255]; // light blue
   }
   else {
-      //this.color = [227, 226, 208, 255];
-      this.color = [208, 192, 191, 255]; // tan
+    //this.color = [227, 226, 208, 255];
+    this.color = [208, 192, 191, 255]; // tan
   } 
   this.color;
 
@@ -227,9 +192,8 @@ function Star(i) {
 
   // what degree angle to start the star around the circle
   this.degree = sketch.random(0, 360);
-
   // distance from center of circle
-  this.radius = sketch.random(0, sketch.width/1.2);
+  this.radius = sketch.map(i, 0, numBands/2, 0, sketch.width/1.2); 
 
   // sin/cos equation to convert polar coordinates to cartesian and draw stars in a circle
   this.x = centerX + (this.radius * sketch.cos(sketch.radians(this.degree)));
@@ -237,17 +201,29 @@ function Star(i) {
 }
 
 // called by draw loop 
-Star.prototype.update = function() {
+Star.prototype.update = function(freqSpectrum, vol, i) {
+  // update this star color and size based on volume and freqSpectrum
+  this.diameter = sketch.map(freqSpectrum[i], 50, 244, 2, 20)*vol;
+  this.increment = sketch.map(freqSpectrum[i], 50, 244, 0, 360)*vol;
+  this.color[3] = sketch.map(freqSpectrum[i], 50, 244, 30, 255)*vol;
 
-    // update the x and y position based on the increment
-    this.x = centerX + (this.radius * sketch.cos(sketch.radians(this.degree + increment)));
-    this.y = centerY + (this.radius * sketch.sin(sketch.radians(this.degree + increment))); 
+  // update the x and y position based on the increment
+  this.x = centerX + (this.radius * sketch.cos(sketch.radians(this.degree + increment)));
+  this.y = centerY + (this.radius * sketch.sin(sketch.radians(this.degree + increment)));
 
-    sketch.noStroke;
+  // dont draw over landscape, fade out alpha value
+  if (this.y > sketch.height/1.6 && this.y < sketch.height/1.3) {
+    this.color[3] *= sketch.map(this.y, sketch.height/1.6, sketch.height/1.3, 0.5, 0.01);
+  }
+  if (this.y > sketch.height/1.3) {
+    this.color[3] = 0;
+  }
 
-    // draw an ellipse at the new x and y position
-    sketch.fill(this.color, 255);  // set color and alpha
-    sketch.ellipse(this.x, this.y, this.diameter, this.diameter);  // give the circles x, y and diamter
+  sketch.noStroke;
+
+  // draw an ellipse at the new x and y position
+  sketch.fill(this.color, 255);  // set color and alpha
+  sketch.ellipse(this.x, this.y, this.diameter, this.diameter);  // give the circles x, y and diamter
 }
 
 // update rotation based on song time / duration
