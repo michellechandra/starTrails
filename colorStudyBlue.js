@@ -18,7 +18,11 @@ var lastVol;  // comparing previous and last volume
 var lastHigh;
 
 var stars = []; // array to hold array of star objects
+var numStars = 0;
+
 var increment = 0;  // value to increment our stars to complete circle shape
+
+var debug = true;
 
 ////////  ****** Start of LANDSCAPE Sketch by Oggy ported to p5.js as derivative sketch ******* \\\\\\\\\\
 
@@ -27,17 +31,15 @@ var increment = 0;  // value to increment our stars to complete circle shape
 
 var s0 = function(sketch) {
 
-  var rootn;   
+  var rootn;
   var windowScreen;
   var dvec;
 
   // Load our song to be visualized and play in callback function
   sketch.setup = function() {
 
-   soundFile = sketch.loadSound('Lee_Rosevere_-_02_-_Waltz_of_the_Stars_valse_des_toiles.mp3', function() {
-     soundFile.play();
-   });
-    
+    soundFile = sketch.createAudio('Lee_Rosevere_-_02_-_Waltz_of_the_Stars_valse_des_toiles.mp3');
+
     // create a canvas for this sketch that is the width of the user's browser window
     var thisCanvas = sketch.createCanvas(sketch.windowWidth, sketch.windowHeight);
 
@@ -54,40 +56,44 @@ var s0 = function(sketch) {
     windowScreen = sketch.createVector(0,0);
     rootn = sketch.createVector(0, 0); 
     dvec = sketch.createVector(0,0);
-     
+
     // call p5 sound fft function for the number of waves to be analyzed
     fft = new p5.FFT(.01, numBands);
 
     // call p5 sound library function to get the amplitude of our song
-    amplitude = new p5.Amplitude(.985); 
+    amplitude = new p5.Amplitude(.985);
+
+    soundFile.connect(fft);
+    soundFile.connect(amplitude);
+    soundFile.play();
 
   }
 
   sketch.draw = function() {
 
-   sketch.clear(); // transparent background
+    sketch.clear(); // transparent background
 
-   // getting amplitude level of song to move the landscape to the volume
-   volume = amplitude.getLevel();
+    // getting amplitude level of song to move the landscape to the volume
+    volume = amplitude.getLevel();
 
-   // offset our landscape below center of screen
-   var offset = 400;
+    // offset our landscape below center of screen
+    var offset = 400;
 
-   // how long will each vertice be in line drawn for landscape
-   // changing this value makes landscape smoother like water or more jagged like terrain
-   var xstep = 7;
+    // how long will each vertice be in line drawn for landscape
+    // changing this value makes landscape smoother like water or more jagged like terrain
+    var xstep = 12;
 
-   // how far apart the landscape lines are 
-   var ystep = 4;
-  
-   // changing these values affects how fast the landscape lines are added to the screen
-   var dx = 5*volume;       
-   var dy = 2*volume;       
+    // how far apart the landscape lines are 
+    var ystep = 16;
+   
+    // changing these values affects how fast the landscape lines are added to the screen
+    var dx = 5*volume;
+    var dy = 2*volume;
 
-   dvec.x = dx;
-   dvec.y = dy;
-   windowScreen.sub(dvec);  // remove vector line from screen 
-   rootn.add(sketch.createVector(.019*dx, .1*dy));  // add vector line to screen
+    dvec.x = dx;
+    dvec.y = dy;
+    windowScreen.sub(dvec);  // remove vector line from screen 
+    rootn.add(sketch.createVector(.019*dx, .1*dy));  // add vector line to screen
 
       // using vector to store y values
       for (var j = 0; j < sketch.height/2; j += ystep) {
@@ -98,32 +104,33 @@ var s0 = function(sketch) {
         // using beginShape() to draw landscape lines
         sketch.beginShape();
 
-      // using vector to store x values
-      for (var i = 0; i < sketch.width; i += xstep) {
-        
-          // landscape line organic motion created using noise function affected by volume
-          var n = sketch.noise((rootn.x + .001*i), (rootn.y + .02*j)+volume); 
+        // using vector to store x values
+        for (var i = 0; i < sketch.width; i += xstep) {
           
-          var tmpy = offset * (n - 1) + j; 
+            // landscape line organic motion created using noise function affected by volume
+            var n = sketch.noise((rootn.x + .001*i), (rootn.y + .02*j)+volume); 
+            
+            var tmpy = offset * (n - 1) + j; 
 
-          // mapping stroke and stroke weight to volume
-          var hue = sketch.map(volume, 0, 0.5, 0, 360);
+            // mapping stroke and stroke weight to volume
+            var hue = sketch.map(volume, 0, 0.5, 0, 360);
 
-          // need to decide concept for what mapping freqSpectrum to for the landscape (might not need)
-          //var hue = sketch.map(freqValues[???], 0, 0.5, 220, 270);
+            // need to decide concept for what mapping freqSpectrum to for the landscape (might not need)
+            //var hue = sketch.map(freqValues[???], 0, 0.5, 220, 270);
 
-          var sat = sketch.map(volume, 0, 0.5, 50, 80);
-          var bri = sketch.map(volume, 0, 0.5, 30, 80);
-          var alp = sketch.map(volume, 0, 0.5, 30, 100);
-          var colorLines = sketch.color(hue, sat, bri, alp);
-          sketch.stroke(colorLines);
-         // sketch.strokeWeight(2); 
-       // sketch.strokeWeight(sketch.map(n, 0, .6, .25, 5));
-          var yPoint = sketch.height - tmpy;
-          sketch.strokeWeight(sketch.map(yPoint, sketch.height/1.6, sketch.height, 0.1, 2));
-          // our shape is just a bunch of vertex points!
-          sketch.vertex(i, yPoint+volume);
-      }
+            var sat = sketch.map(volume, 0, 0.5, 50, 80);
+            var bri = sketch.map(volume, 0, 0.5, 30, 80);
+            var alp = sketch.map(volume, 0, 0.5, 30, 100);
+            var colorLines = sketch.color(hue, sat, bri, alp);
+            sketch.stroke(colorLines);
+
+            // sketch.strokeWeight(2); 
+            // sketch.strokeWeight(sketch.map(n, 0, .6, .25, 5));
+            var yPoint = sketch.height - tmpy;
+            sketch.strokeWeight(sketch.map(yPoint, sketch.height/1.6, sketch.height, 0.1, 2));
+            // our shape is just a bunch of vertex points!
+            sketch.vertex(i, yPoint+volume);
+        }
     // end of drawing line shape
     sketch.endShape();
   }
@@ -155,7 +162,9 @@ var s1 = function(sketch) {
 
     // create a bunch of star objects and add them to the array called stars
     // length of stars array will be linked to buffer size
-    for (var i = numBands/2-1; i>=0; i--) {
+
+    numStars = numBands/2-1;
+    for (var i = numStars; i>=0; i--) {
       stars.push(new Star(i));
 
     }
@@ -163,13 +172,20 @@ var s1 = function(sketch) {
 
   sketch.draw = function() {
 
+    if (debug) {
+      sketch.fill(0)
+      sketch.rect(20, 0, 100, 30);
+      sketch.fill(255);
+      sketch.text('frame rate: ' + sketch.frameRate().toFixed(2), 20, 20 );
+    }
+
     updateIncrement();  // update increment value stars drawn according to song currentTime and duration
-    //console.log(volume);
+
     // get frequency wave analysis and store in array
     freqValues = fft.analyze();
-    //console.log(freqValues);
+
     // for every Star object in the array called 'stars'...
-    for (var i = stars.length-1; i>=0; i--) {
+    for (var i = numStars; i>=0; i--) {
       stars[i].update(freqValues, volume, i);
 
       if (i == 0) {
@@ -190,15 +206,26 @@ function Star(i) {
   // sin/cos equation to convert polar coordinates to cartesian and draw stars in a circle
   this.x = centerX + (this.radius * sketch.cos(sketch.radians(this.degree)));
   this.y = centerY + (this.radius * sketch.sin(sketch.radians(this.degree)));
+
+  this._prevSpec = 0;
 }
 
 // called by draw loop 
 Star.prototype.update = function(freqSpectrum, vol, i) {
+  var fac = 0;
+  var lastSpec = this._prevSpec;
+  this._prevSpec = freqSpectrum;
+
+  if (freqSpectrum > lastSpec) {
+    fac = 1.1;
+  } else {
+    fac = sketch.map(lastSpec - freqSpectrum, 255, 0, 0, 1);
+  }
 
   // diameter of circle drawn for each star
-  this.diameter = sketch.map(freqSpectrum[i], 50, 244, 18, 0)*vol;
+  this.diameter = sketch.map(freqSpectrum[i], 50, 244, 18, 0)*vol * fac;
   //this.increment = sketch.map(vol, 0, 0.5, 0, 360);
-  this.increment = sketch.map(freqSpectrum[i], 50, 244, 0, 360)*vol;
+  this.increment = sketch.map(freqSpectrum[i], 50, 244, 0, 360)*vol * fac;
   // what degree angle to start the star around the circle
   //this.increment = sketch.map(vol, 0, 0.5, 360, 0);
 
@@ -212,7 +239,7 @@ Star.prototype.update = function(freqSpectrum, vol, i) {
   this.y = centerY + (this.radius * sketch.sin(sketch.radians(this.degree + this.increment)));
 
   //var h = sketch.map(freqSpectrum[i], 50, 244, 184, 260);
-  var h = sketch.map(vol, 0, 0.5, 184, 260);
+  var h = sketch.map(vol, 0, 0.35, 184, 260);
   var s = sketch.map(freqSpectrum[i], 50, 244, 40, 80);
   var b = sketch.map(this.radius, 0, sketch.width/1.2, 80, 100);
   var a = sketch.map(this.y, 0, sketch.height/1.2, 50, 0);
@@ -233,7 +260,7 @@ Star.prototype.update = function(freqSpectrum, vol, i) {
 function updateIncrement() {
 
   // get the currentTime of the song using p5 getter function
-  currentTime = soundFile.currentTime();
+  currentTime = soundFile.elt.currentTime;
 
   // get the length of the song using p5 sound library
   duration = soundFile.duration();
