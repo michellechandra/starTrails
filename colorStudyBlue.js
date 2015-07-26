@@ -1,12 +1,9 @@
-
 /* "noisy landscape" by oggy, licensed under Creative Commons Attribution-Share Alike 3.0 and GNU GPL license.
 Work: http://openprocessing.org/visuals/?visualID= 153917 
 License: 
 http://creativecommons.org/licenses/by-sa/3.0/
 http://creativecommons.org/licenses/GPL/2.0/
 */
-
-// tone.setContext(getAudioContext()); // tone use p5 audio context
 
 // Global p5.sound variables \\
 var volume = 0.01; // initial starting volume of amplitude (necessary for p5.sound)
@@ -36,6 +33,7 @@ var s0 = function(sketch) {
 
   // Load our song to be visualized and play in callback function
   sketch.setup = function() {
+
    soundFile = sketch.loadSound('Lee_Rosevere_-_02_-_Waltz_of_the_Stars_valse_des_toiles.mp3', function() {
      soundFile.play();
    });
@@ -174,8 +172,8 @@ var s1 = function(sketch) {
     for (var i = stars.length-1; i>=0; i--) {
       stars[i].update(freqValues, volume, i);
 
-      if (i ==0) {
-        console.log(stars[i].hueOne);
+      if (i == 0) {
+        // console.log(stars[i].hueOne);
       };
     }
 
@@ -205,7 +203,7 @@ Star.prototype.update = function(freqSpectrum, vol, i) {
   //this.increment = sketch.map(vol, 0, 0.5, 360, 0);
 
   // radius position from center of screen
-  this.radius = sketch.map(i, 0, numBands/2, 0, sketch.width/1.2);
+   this.radius = sketch.map(i, 0, numBands/2, 0, sketch.width/1.2);
   //this.radius = sketch.map(vol, 0, 0.5, 0, sketch.width);
 
   // could use increment value here or take out that function instead
@@ -250,23 +248,7 @@ function updateIncrement() {
   else {
     increment = myIncrement;
   }
-
-  // variables to fade out our gradients 
-/*  var fadeOutOne = 40;
-  var fadeOutTwo = 90;
-
-  // Check state of currentTime and fade out gradient
-  if (currentTime > fadeOutOne ) {
-  $('.gradientTwo').animate({ opacity: 0 }, 30000); 
-    }*/
 }
-
-  // when document is loaded and ready, execute jQuery manipulations to fade out gradient backgrounds
-
- /*  $(document).ready(function() {
-  // Fade out my first gradient when the DOM is ready
-  $('.gradientOne').animate({ opacity:0 }, 30000 );
- }); */
 
   };
 
