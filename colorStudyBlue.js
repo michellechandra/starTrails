@@ -77,14 +77,14 @@ var s0 = function(sketch) {
     volume = amplitude.getLevel();
 
     // offset our landscape below center of screen
-    var offset = 400;
+    var offset = 200;
 
     // how long will each vertice be in line drawn for landscape
     // changing this value makes landscape smoother like water or more jagged like terrain
-    var xstep = 12;
+    var xstep = 10;
 
     // how far apart the landscape lines are 
-    var ystep = 16;
+    var ystep = 8;
    
     // changing these values affects how fast the landscape lines are added to the screen
     var dx = 5*volume;
@@ -172,12 +172,12 @@ var s1 = function(sketch) {
 
   sketch.draw = function() {
 
-    if (debug) {
+   /* if (debug) {
       sketch.fill(0)
       sketch.rect(20, 0, 100, 30);
       sketch.fill(255);
       sketch.text('frame rate: ' + sketch.frameRate().toFixed(2), 20, 20 );
-    }
+    } */
 
     updateIncrement();  // update increment value stars drawn according to song currentTime and duration
 
@@ -219,7 +219,7 @@ Star.prototype.update = function(freqSpectrum, vol, i) {
   if (freqSpectrum > lastSpec) {
     fac = 1.1;
   } else {
-    fac = sketch.map(lastSpec - freqSpectrum, 255, 0, 0, 1);
+    fac = sketch.map(lastSpec - freqSpectrum, 360, 0, 0, .25);
   }
 
   // diameter of circle drawn for each star
@@ -239,7 +239,7 @@ Star.prototype.update = function(freqSpectrum, vol, i) {
   this.y = centerY + (this.radius * sketch.sin(sketch.radians(this.degree + this.increment)));
 
   //var h = sketch.map(freqSpectrum[i], 50, 244, 184, 260);
-  var h = sketch.map(vol, 0, 0.35, 184, 260);
+  var h = sketch.map(vol, 0, 0.5, 184, 260);
   var s = sketch.map(freqSpectrum[i], 50, 244, 40, 80);
   var b = sketch.map(this.radius, 0, sketch.width/1.2, 80, 100);
   var a = sketch.map(this.y, 0, sketch.height/1.2, 50, 0);
