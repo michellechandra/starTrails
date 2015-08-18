@@ -5,4 +5,5 @@ A collaborative music visualization project with Jason Sigal using the p5.js lib
 
 Star Trails takes inspiration from long exposure photography of the night sky in which the light trails of stars records the rotation of the earth. 
 
+View online: [www.literarylicense.org](www.literarylicense.org)
 
